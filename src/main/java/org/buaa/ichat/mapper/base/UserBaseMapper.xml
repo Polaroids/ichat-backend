@@ -1,0 +1,800 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.buaa.ichat.mapper.base.UserBaseMapper">
+
+
+    <insert id="insertUser"  useGeneratedKeys="true" keyProperty="id" >
+        INSERT INTO `User`
+        (
+        <trim suffixOverrides=",">
+                    <if test="id!=null">
+                        `id`,
+                    </if>
+                    <if test="username!=null">
+                        `username`,
+                    </if>
+                    <if test="password!=null">
+                        `password`,
+                    </if>
+                    <if test="age!=null">
+                        `age`,
+                    </if>
+                    <if test="info!=null">
+                        `info`,
+                    </if>
+                    <if test="sex!=null">
+                        `sex`,
+                    </if>
+                    <if test="avatar!=null">
+                        `avatar`,
+                    </if>
+                    <if test="createTime!=null">
+                        `createTime`,
+                    </if>
+                    <if test="email!=null">
+                        `email`,
+                    </if>
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffixOverrides=",">
+                <if test="id!=null">
+                    #{id},
+                </if>
+                <if test="username!=null">
+                    #{username},
+                </if>
+                <if test="password!=null">
+                    #{password},
+                </if>
+                <if test="age!=null">
+                    #{age},
+                </if>
+                <if test="info!=null">
+                    #{info},
+                </if>
+                <if test="sex!=null">
+                    #{sex},
+                </if>
+                <if test="avatar!=null">
+                    #{avatar},
+                </if>
+                <if test="createTime!=null">
+                    #{createTime},
+                </if>
+                <if test="email!=null">
+                    #{email},
+                </if>
+        </trim>
+        )
+    </insert>
+
+
+
+
+    <update id="updateUser">
+        UPDATE `User`
+        SET
+        <trim suffixOverrides=",">
+            <if test="username != null and username!=''">
+                `username` = #{username},
+            </if>
+            <if test="password != null and password!=''">
+                `password` = #{password},
+            </if>
+            <if test="age != null">
+                `age` = #{age},
+            </if>
+            <if test="info != null and info!=''">
+                `info` = #{info},
+            </if>
+            <if test="sex != null">
+                `sex` = #{sex},
+            </if>
+            <if test="avatar != null and avatar!=''">
+                `avatar` = #{avatar},
+            </if>
+            <if test="createTime != null and createTime!=''">
+                `createTime` = #{createTime},
+            </if>
+        </trim>
+        WHERE
+        <trim suffixOverrides="and">
+                `id` = #{id} and
+                `email` = #{email} and
+        </trim>
+    </update>
+
+    <update id="update">
+        UPDATE `User`
+        SET
+        <trim suffixOverrides=",">
+        <if test="set.username != null and set.username!=''">
+            `username` = #{set.username},
+        </if>
+        <if test="set.password != null and set.password!=''">
+            `password` = #{set.password},
+        </if>
+        <if test="set.age != null">
+            `age` = #{set.age},
+        </if>
+        <if test="set.info != null and set.info!=''">
+            `info` = #{set.info},
+        </if>
+        <if test="set.sex != null">
+            `sex` = #{set.sex},
+        </if>
+        <if test="set.avatar != null and set.avatar!=''">
+            `avatar` = #{set.avatar},
+        </if>
+        <if test="set.createTime != null and set.createTime!=''">
+            `createTime` = #{set.createTime},
+        </if>
+        </trim>
+        <trim prefix="where" suffixOverrides="and | or">
+                <if test="where.idList != null">
+                    `id` in
+                    <foreach collection="where.idList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.idSt !=null">
+                `id` >= #{where.idSt} and
+            </if>
+            <if test="where.idEd!=null">
+                `id` &lt;= #{where.idEd} and
+            </if>
+                <if test="where.usernameList != null">
+                    `username` in
+                    <foreach collection="where.usernameList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test ="where.fuzzyUsername!=null and where.fuzzyUsername.size()>0">
+                (
+                <foreach collection="where.fuzzyUsername"  separator="or" item="item">
+                    `Username` like concat('%',#{item},'%')
+                </foreach>
+                ) and
+            </if>
+            <if test ="where.rightFuzzyUsername!=null and where.rightFuzzyUsername.size()>0">
+                (
+                <foreach collection="where.rightFuzzyUsername"  separator="or" item="item">
+                    `Username` like concat(#{item},'%')
+                </foreach>
+                ) and
+            </if>
+                <if test="where.passwordList != null">
+                    `password` in
+                    <foreach collection="where.passwordList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test ="where.fuzzyPassword!=null and where.fuzzyPassword.size()>0">
+                (
+                <foreach collection="where.fuzzyPassword"  separator="or" item="item">
+                    `Password` like concat('%',#{item},'%')
+                </foreach>
+                ) and
+            </if>
+            <if test ="where.rightFuzzyPassword!=null and where.rightFuzzyPassword.size()>0">
+                (
+                <foreach collection="where.rightFuzzyPassword"  separator="or" item="item">
+                    `Password` like concat(#{item},'%')
+                </foreach>
+                ) and
+            </if>
+                <if test="where.ageList != null">
+                    `age` in
+                    <foreach collection="where.ageList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.ageSt !=null">
+                `age` >= #{where.ageSt} and
+            </if>
+            <if test="where.ageEd!=null">
+                `age` &lt;= #{where.ageEd} and
+            </if>
+                <if test="where.infoList != null">
+                    `info` in
+                    <foreach collection="where.infoList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test ="where.fuzzyInfo!=null and where.fuzzyInfo.size()>0">
+                (
+                <foreach collection="where.fuzzyInfo"  separator="or" item="item">
+                    `Info` like concat('%',#{item},'%')
+                </foreach>
+                ) and
+            </if>
+            <if test ="where.rightFuzzyInfo!=null and where.rightFuzzyInfo.size()>0">
+                (
+                <foreach collection="where.rightFuzzyInfo"  separator="or" item="item">
+                    `Info` like concat(#{item},'%')
+                </foreach>
+                ) and
+            </if>
+                <if test="where.sexList != null">
+                    `sex` in
+                    <foreach collection="where.sexList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.sexSt !=null">
+                `sex` >= #{where.sexSt} and
+            </if>
+            <if test="where.sexEd!=null">
+                `sex` &lt;= #{where.sexEd} and
+            </if>
+                <if test="where.avatarList != null">
+                    `avatar` in
+                    <foreach collection="where.avatarList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test ="where.fuzzyAvatar!=null and where.fuzzyAvatar.size()>0">
+                (
+                <foreach collection="where.fuzzyAvatar"  separator="or" item="item">
+                    `Avatar` like concat('%',#{item},'%')
+                </foreach>
+                ) and
+            </if>
+            <if test ="where.rightFuzzyAvatar!=null and where.rightFuzzyAvatar.size()>0">
+                (
+                <foreach collection="where.rightFuzzyAvatar"  separator="or" item="item">
+                    `Avatar` like concat(#{item},'%')
+                </foreach>
+                ) and
+            </if>
+                <if test="where.createTimeList != null">
+                    `createTime` in
+                    <foreach collection="where.createTimeList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test ="where.fuzzyCreateTime!=null and where.fuzzyCreateTime.size()>0">
+                (
+                <foreach collection="where.fuzzyCreateTime"  separator="or" item="item">
+                    `CreateTime` like concat('%',#{item},'%')
+                </foreach>
+                ) and
+            </if>
+            <if test ="where.rightFuzzyCreateTime!=null and where.rightFuzzyCreateTime.size()>0">
+                (
+                <foreach collection="where.rightFuzzyCreateTime"  separator="or" item="item">
+                    `CreateTime` like concat(#{item},'%')
+                </foreach>
+                ) and
+            </if>
+                <if test="where.emailList != null">
+                    `email` in
+                    <foreach collection="where.emailList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test ="where.fuzzyEmail!=null and where.fuzzyEmail.size()>0">
+                (
+                <foreach collection="where.fuzzyEmail"  separator="or" item="item">
+                    `Email` like concat('%',#{item},'%')
+                </foreach>
+                ) and
+            </if>
+            <if test ="where.rightFuzzyEmail!=null and where.rightFuzzyEmail.size()>0">
+                (
+                <foreach collection="where.rightFuzzyEmail"  separator="or" item="item">
+                    `Email` like concat(#{item},'%')
+                </foreach>
+                ) and
+            </if>
+        </trim>
+    </update>
+
+
+    <resultMap type="org.buaa.ichat.entity.User" id="UserMap">
+        <result property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="age" column="age"/>
+        <result property="info" column="info"/>
+        <result property="sex" column="sex"/>
+        <result property="avatar" column="avatar"/>
+        <result property="createTime" column="createTime"/>
+        <result property="email" column="email"/>
+    </resultMap>
+
+
+    <select id="queryUser" resultMap="UserMap">
+        select
+        <include refid="baseResult"></include>
+        from  `User`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="id != null">
+                `id` = #{id} and
+            </if>
+            <if test="username != null and username!=''">
+                `username` = #{username} and
+            </if>
+            <if test="password != null and password!=''">
+                `password` = #{password} and
+            </if>
+            <if test="age != null">
+                `age` = #{age} and
+            </if>
+            <if test="info != null and info!=''">
+                `info` = #{info} and
+            </if>
+            <if test="sex != null">
+                `sex` = #{sex} and
+            </if>
+            <if test="avatar != null and avatar!=''">
+                `avatar` = #{avatar} and
+            </if>
+            <if test="createTime != null and createTime!=''">
+                `createTime` = #{createTime} and
+            </if>
+            <if test="email != null and email!=''">
+                `email` = #{email} and
+            </if>
+            <if test = "(_parameter instanceof org.buaa.ichat.entity.User$QueryBuilder) == true">
+                <if test="idList != null">
+                    `id` in
+                    <foreach collection="idList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="idSt !=null">
+                    `id` >= #{idSt} and
+                </if>
+                <if test="idEd!=null">
+                    `id` &lt;= #{idEd} and
+                </if>
+                <if test="usernameList != null">
+                    `username` in
+                    <foreach collection="usernameList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test ="fuzzyUsername!=null and fuzzyUsername.size()>0">
+                    (
+                    <foreach collection="fuzzyUsername"  separator="or" item="item">
+                        `Username` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyUsername!=null and rightFuzzyUsername.size()>0">
+                    (
+                    <foreach collection="rightFuzzyUsername"  separator="or" item="item">
+                        `Username` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test="passwordList != null">
+                    `password` in
+                    <foreach collection="passwordList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test ="fuzzyPassword!=null and fuzzyPassword.size()>0">
+                    (
+                    <foreach collection="fuzzyPassword"  separator="or" item="item">
+                        `Password` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyPassword!=null and rightFuzzyPassword.size()>0">
+                    (
+                    <foreach collection="rightFuzzyPassword"  separator="or" item="item">
+                        `Password` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test="ageList != null">
+                    `age` in
+                    <foreach collection="ageList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="ageSt !=null">
+                    `age` >= #{ageSt} and
+                </if>
+                <if test="ageEd!=null">
+                    `age` &lt;= #{ageEd} and
+                </if>
+                <if test="infoList != null">
+                    `info` in
+                    <foreach collection="infoList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test ="fuzzyInfo!=null and fuzzyInfo.size()>0">
+                    (
+                    <foreach collection="fuzzyInfo"  separator="or" item="item">
+                        `Info` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyInfo!=null and rightFuzzyInfo.size()>0">
+                    (
+                    <foreach collection="rightFuzzyInfo"  separator="or" item="item">
+                        `Info` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test="sexList != null">
+                    `sex` in
+                    <foreach collection="sexList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="sexSt !=null">
+                    `sex` >= #{sexSt} and
+                </if>
+                <if test="sexEd!=null">
+                    `sex` &lt;= #{sexEd} and
+                </if>
+                <if test="avatarList != null">
+                    `avatar` in
+                    <foreach collection="avatarList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test ="fuzzyAvatar!=null and fuzzyAvatar.size()>0">
+                    (
+                    <foreach collection="fuzzyAvatar"  separator="or" item="item">
+                        `Avatar` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyAvatar!=null and rightFuzzyAvatar.size()>0">
+                    (
+                    <foreach collection="rightFuzzyAvatar"  separator="or" item="item">
+                        `Avatar` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test="createTimeList != null">
+                    `createTime` in
+                    <foreach collection="createTimeList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test ="fuzzyCreateTime!=null and fuzzyCreateTime.size()>0">
+                    (
+                    <foreach collection="fuzzyCreateTime"  separator="or" item="item">
+                        `CreateTime` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyCreateTime!=null and rightFuzzyCreateTime.size()>0">
+                    (
+                    <foreach collection="rightFuzzyCreateTime"  separator="or" item="item">
+                        `CreateTime` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test="emailList != null">
+                    `email` in
+                    <foreach collection="emailList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test ="fuzzyEmail!=null and fuzzyEmail.size()>0">
+                    (
+                    <foreach collection="fuzzyEmail"  separator="or" item="item">
+                        `Email` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyEmail!=null and rightFuzzyEmail.size()>0">
+                    (
+                    <foreach collection="rightFuzzyEmail"  separator="or" item="item">
+                        `Email` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+            </if>
+        </trim>
+    </select>
+
+    <select id="queryUserLimit1" resultMap="UserMap">
+        select
+        <include refid="baseResult"></include>
+        from  `User`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="id != null">
+                `id` = #{id} and
+            </if>
+            <if test="username != null and username!=''">
+                `username` = #{username} and
+            </if>
+            <if test="password != null and password!=''">
+                `password` = #{password} and
+            </if>
+            <if test="age != null">
+                `age` = #{age} and
+            </if>
+            <if test="info != null and info!=''">
+                `info` = #{info} and
+            </if>
+            <if test="sex != null">
+                `sex` = #{sex} and
+            </if>
+            <if test="avatar != null and avatar!=''">
+                `avatar` = #{avatar} and
+            </if>
+            <if test="createTime != null and createTime!=''">
+                `createTime` = #{createTime} and
+            </if>
+            <if test="email != null and email!=''">
+                `email` = #{email} and
+            </if>
+            <if test = "(_parameter instanceof org.buaa.ichat.entity.User$QueryBuilder) == true">
+                    <if test="idList != null">
+                        `id` in
+                        <foreach collection="idList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="idSt !=null">
+                    `id` >= #{idSt} and
+                </if>
+                <if test="idEd!=null">
+                    `id` &lt;= #{idEd} and
+                </if>
+                    <if test="usernameList != null">
+                        `username` in
+                        <foreach collection="usernameList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test ="fuzzyUsername!=null and fuzzyUsername.size()>0">
+                    (
+                    <foreach collection="fuzzyUsername"  separator="or" item="item">
+                        `Username` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyUsername!=null and rightFuzzyUsername.size()>0">
+                    (
+                    <foreach collection="rightFuzzyUsername"  separator="or" item="item">
+                        `Username` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                    <if test="passwordList != null">
+                        `password` in
+                        <foreach collection="passwordList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test ="fuzzyPassword!=null and fuzzyPassword.size()>0">
+                    (
+                    <foreach collection="fuzzyPassword"  separator="or" item="item">
+                        `Password` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyPassword!=null and rightFuzzyPassword.size()>0">
+                    (
+                    <foreach collection="rightFuzzyPassword"  separator="or" item="item">
+                        `Password` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                    <if test="ageList != null">
+                        `age` in
+                        <foreach collection="ageList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="ageSt !=null">
+                    `age` >= #{ageSt} and
+                </if>
+                <if test="ageEd!=null">
+                    `age` &lt;= #{ageEd} and
+                </if>
+                    <if test="infoList != null">
+                        `info` in
+                        <foreach collection="infoList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test ="fuzzyInfo!=null and fuzzyInfo.size()>0">
+                    (
+                    <foreach collection="fuzzyInfo"  separator="or" item="item">
+                        `Info` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyInfo!=null and rightFuzzyInfo.size()>0">
+                    (
+                    <foreach collection="rightFuzzyInfo"  separator="or" item="item">
+                        `Info` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                    <if test="sexList != null">
+                        `sex` in
+                        <foreach collection="sexList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="sexSt !=null">
+                    `sex` >= #{sexSt} and
+                </if>
+                <if test="sexEd!=null">
+                    `sex` &lt;= #{sexEd} and
+                </if>
+                    <if test="avatarList != null">
+                        `avatar` in
+                        <foreach collection="avatarList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test ="fuzzyAvatar!=null and fuzzyAvatar.size()>0">
+                    (
+                    <foreach collection="fuzzyAvatar"  separator="or" item="item">
+                        `Avatar` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyAvatar!=null and rightFuzzyAvatar.size()>0">
+                    (
+                    <foreach collection="rightFuzzyAvatar"  separator="or" item="item">
+                        `Avatar` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                    <if test="createTimeList != null">
+                        `createTime` in
+                        <foreach collection="createTimeList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test ="fuzzyCreateTime!=null and fuzzyCreateTime.size()>0">
+                    (
+                    <foreach collection="fuzzyCreateTime"  separator="or" item="item">
+                        `CreateTime` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyCreateTime!=null and rightFuzzyCreateTime.size()>0">
+                    (
+                    <foreach collection="rightFuzzyCreateTime"  separator="or" item="item">
+                        `CreateTime` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                    <if test="emailList != null">
+                        `email` in
+                        <foreach collection="emailList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test ="fuzzyEmail!=null and fuzzyEmail.size()>0">
+                    (
+                    <foreach collection="fuzzyEmail"  separator="or" item="item">
+                        `Email` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyEmail!=null and rightFuzzyEmail.size()>0">
+                    (
+                    <foreach collection="rightFuzzyEmail"  separator="or" item="item">
+                        `Email` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+            </if>
+        </trim>
+        limit 1
+    </select>
+
+    <sql id="allResult">
+        <trim suffixOverrides=",">
+        `id`,
+        `username`,
+        `password`,
+        `age`,
+        `info`,
+        `sex`,
+        `avatar`,
+        `createTime`,
+        `email`,
+        </trim>
+    </sql>
+
+
+
+    <sql id="baseResult">
+        <trim suffixOverrides=",">
+            <if test = "(_parameter instanceof org.buaa.ichat.entity.User$QueryBuilder) == true">
+
+                <if test="fetchFields==null">
+                    <include refid="allResult"></include>
+                </if>
+                <if test="fetchFields!=null">
+                    <if test="fetchFields.AllFields !=null">
+                        <include refid="allResult"></include>
+                    </if>
+                    <if test="fetchFields.AllFields ==null and fetchFields.fetchFields==null and fetchFields.excludeFields==null and fetchFields.otherFields==null">
+                        <include refid="allResult"></include>
+                    </if>
+                    <if test="fetchFields.AllFields==null and fetchFields.fetchFields!=null">
+                    <if test="fetchFields.fetchFields.id==true">
+                        `id`,
+                    </if>
+                    <if test="fetchFields.fetchFields.username==true">
+                        `username`,
+                    </if>
+                    <if test="fetchFields.fetchFields.password==true">
+                        `password`,
+                    </if>
+                    <if test="fetchFields.fetchFields.age==true">
+                        `age`,
+                    </if>
+                    <if test="fetchFields.fetchFields.info==true">
+                        `info`,
+                    </if>
+                    <if test="fetchFields.fetchFields.sex==true">
+                        `sex`,
+                    </if>
+                    <if test="fetchFields.fetchFields.avatar==true">
+                        `avatar`,
+                    </if>
+                    <if test="fetchFields.fetchFields.createTime==true">
+                        `createTime`,
+                    </if>
+                    <if test="fetchFields.fetchFields.email==true">
+                        `email`,
+                    </if>
+                    </if>
+                    <if test="fetchFields.AllFields==null and fetchFields.excludeFields!=null">
+                    <if test="fetchFields.excludeFields.id==null">
+                        `id`,
+                    </if>
+                    <if test="fetchFields.excludeFields.username==null">
+                        `username`,
+                    </if>
+                    <if test="fetchFields.excludeFields.password==null">
+                        `password`,
+                    </if>
+                    <if test="fetchFields.excludeFields.age==null">
+                        `age`,
+                    </if>
+                    <if test="fetchFields.excludeFields.info==null">
+                        `info`,
+                    </if>
+                    <if test="fetchFields.excludeFields.sex==null">
+                        `sex`,
+                    </if>
+                    <if test="fetchFields.excludeFields.avatar==null">
+                        `avatar`,
+                    </if>
+                    <if test="fetchFields.excludeFields.createTime==null">
+                        `createTime`,
+                    </if>
+                    <if test="fetchFields.excludeFields.email==null">
+                        `email`,
+                    </if>
+                    </if>
+                    <if test="fetchFields.otherFields!=null and fetchFields.otherFields.size>0">
+                        <foreach collection="fetchFields.otherFields" index="index" item="item" separator=",">
+                        `#{item}`
+                        </foreach>
+                    </if>
+                </if>
+            </if>
+            <if test="(_parameter instanceof org.buaa.ichat.entity.User$QueryBuilder) == false" >
+                <include refid="allResult"></include>
+            </if>
+
+        </trim>
+    </sql>
+
+
+</mapper>
