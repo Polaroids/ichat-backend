@@ -30,7 +30,7 @@ public class ShiroConfig {
 
         filterChainDefinitionMap.put("/api/user/login", "anon");
         filterChainDefinitionMap.put("/api/user/register", "anon");
-        filterChainDefinitionMap.put("/api/user/info", "anon");
+        filterChainDefinitionMap.put("/api/group/test", "anon");
 
         //主要这行代码必须放在所有权限设置的最后，不然会导致所有 url 都被拦截 剩余的都需要认证
         filterChainDefinitionMap.put("/**", "authc");

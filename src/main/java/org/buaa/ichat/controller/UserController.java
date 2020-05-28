@@ -7,7 +7,6 @@ import org.buaa.ichat.service.UserService;
 import org.buaa.ichat.tool.RetResponse;
 import org.buaa.ichat.tool.RetResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,6 +52,8 @@ public class UserController {
 
     @PostMapping({"register"})
     public RetResult<Object> register(String userName, String password, String email){
+        if (userName==null||userName.equals("")||password==null||password.equals("")||email==null||email.equals(""))
+            return RetResponse.makeErrRsp("用户名或密码或email不可为空");
         try {
             return RetResponse.makeOKRsp((userService.register(userName, password, email)));
         }
@@ -62,10 +63,12 @@ public class UserController {
     }
 
     @GetMapping(value = "/info")
-    public RetResult<Object> person(){
+    public RetResult<Object> person(Integer ID){
         Subject subject = SecurityUtils.getSubject();
         Integer userID = new Integer ((String)subject.getPrincipal());
         try {
+            if (ID != null)
+                userID = ID;
             return RetResponse.makeOKRsp(userService.getInfo(userID));
         }
         catch (Exception e){

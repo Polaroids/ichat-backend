@@ -4,12 +4,12 @@
 <mapper namespace="org.buaa.ichat.mapper.base.UserBaseMapper">
 
 
-    <insert id="insertUser"  useGeneratedKeys="true" keyProperty="id" >
+    <insert id="insertUser"  useGeneratedKeys="true" keyProperty="UserID">
         INSERT INTO `User`
         (
         <trim suffixOverrides=",">
-                    <if test="id!=null">
-                        `id`,
+                    <if test="UserID!=null">
+                        `UserID`,
                     </if>
                     <if test="username!=null">
                         `username`,
@@ -40,8 +40,8 @@
         VALUES
         (
         <trim suffixOverrides=",">
-                <if test="id!=null">
-                    #{id},
+                <if test="UserID!=null">
+                    #{UserID},
                 </if>
                 <if test="username!=null">
                     #{username},
@@ -102,7 +102,7 @@
         </trim>
         WHERE
         <trim suffixOverrides="and">
-                `id` = #{id} and
+                `UserID` = #{UserID} and
                 `email` = #{email} and
         </trim>
     </update>
@@ -134,17 +134,17 @@
         </if>
         </trim>
         <trim prefix="where" suffixOverrides="and | or">
-                <if test="where.idList != null">
-                    `id` in
-                    <foreach collection="where.idList" close=")" open="(" separator="," item="item">
+                <if test="where.UserIDList != null">
+                    `UserID` in
+                    <foreach collection="where.UserIDList" close=")" open="(" separator="," item="item">
                         #{item}
                     </foreach> and
                 </if>
-            <if test="where.idSt !=null">
-                `id` >= #{where.idSt} and
+            <if test="where.UserIDSt !=null">
+                `UserID` >= #{where.UserIDSt} and
             </if>
-            <if test="where.idEd!=null">
-                `id` &lt;= #{where.idEd} and
+            <if test="where.UserIDEd!=null">
+                `UserID` &lt;= #{where.UserIDEd} and
             </if>
                 <if test="where.usernameList != null">
                     `username` in
@@ -295,7 +295,7 @@
 
 
     <resultMap type="org.buaa.ichat.entity.User" id="UserMap">
-        <result property="id" column="id"/>
+        <result property="UserID" column="UserID"/>
         <result property="username" column="username"/>
         <result property="password" column="password"/>
         <result property="age" column="age"/>
@@ -312,8 +312,8 @@
         <include refid="baseResult"></include>
         from  `User`
         <trim prefix="where" suffixOverrides="and | or">
-            <if test="id != null">
-                `id` = #{id} and
+            <if test="UserID != null">
+                `UserID` = #{UserID} and
             </if>
             <if test="username != null and username!=''">
                 `username` = #{username} and
@@ -340,17 +340,17 @@
                 `email` = #{email} and
             </if>
             <if test = "(_parameter instanceof org.buaa.ichat.entity.User$QueryBuilder) == true">
-                <if test="idList != null">
-                    `id` in
-                    <foreach collection="idList" close=")" open="(" separator="," item="item">
+                <if test="UserIDList != null">
+                    `UserID` in
+                    <foreach collection="UserIDList" close=")" open="(" separator="," item="item">
                         #{item}
                     </foreach> and
                 </if>
-                <if test="idSt !=null">
-                    `id` >= #{idSt} and
+                <if test="UserIDSt !=null">
+                    `UserID` >= #{UserIDSt} and
                 </if>
-                <if test="idEd!=null">
-                    `id` &lt;= #{idEd} and
+                <if test="UserIDEd!=null">
+                    `UserID` &lt;= #{UserIDEd} and
                 </if>
                 <if test="usernameList != null">
                     `username` in
@@ -505,8 +505,8 @@
         <include refid="baseResult"></include>
         from  `User`
         <trim prefix="where" suffixOverrides="and | or">
-            <if test="id != null">
-                `id` = #{id} and
+            <if test="UserID != null">
+                `UserID` = #{UserID} and
             </if>
             <if test="username != null and username!=''">
                 `username` = #{username} and
@@ -533,17 +533,17 @@
                 `email` = #{email} and
             </if>
             <if test = "(_parameter instanceof org.buaa.ichat.entity.User$QueryBuilder) == true">
-                    <if test="idList != null">
-                        `id` in
-                        <foreach collection="idList" close=")" open="(" separator="," item="item">
+                    <if test="UserIDList != null">
+                        `UserID` in
+                        <foreach collection="UserIDList" close=")" open="(" separator="," item="item">
                             #{item}
                         </foreach> and
                     </if>
-                <if test="idSt !=null">
-                    `id` >= #{idSt} and
+                <if test="UserIDSt !=null">
+                    `UserID` >= #{UserIDSt} and
                 </if>
-                <if test="idEd!=null">
-                    `id` &lt;= #{idEd} and
+                <if test="UserIDEd!=null">
+                    `UserID` &lt;= #{UserIDEd} and
                 </if>
                     <if test="usernameList != null">
                         `username` in
@@ -696,7 +696,7 @@
 
     <sql id="allResult">
         <trim suffixOverrides=",">
-        `id`,
+        `UserID`,
         `username`,
         `password`,
         `age`,
@@ -725,8 +725,8 @@
                         <include refid="allResult"></include>
                     </if>
                     <if test="fetchFields.AllFields==null and fetchFields.fetchFields!=null">
-                    <if test="fetchFields.fetchFields.id==true">
-                        `id`,
+                    <if test="fetchFields.fetchFields.UserID==true">
+                        `UserID`,
                     </if>
                     <if test="fetchFields.fetchFields.username==true">
                         `username`,
@@ -754,8 +754,8 @@
                     </if>
                     </if>
                     <if test="fetchFields.AllFields==null and fetchFields.excludeFields!=null">
-                    <if test="fetchFields.excludeFields.id==null">
-                        `id`,
+                    <if test="fetchFields.excludeFields.UserID==null">
+                        `UserID`,
                     </if>
                     <if test="fetchFields.excludeFields.username==null">
                         `username`,

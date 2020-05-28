@@ -12,7 +12,7 @@ import java.util.List;
 */
 public class User implements Serializable {
 
-    private static final long serialVersionUID = 1590137741210L;
+    private static final long serialVersionUID = 1590641269376L;
 
 
     /**
@@ -20,7 +20,7 @@ public class User implements Serializable {
     * 
     * isNullAble:0
     */
-    private Integer id;
+    private Integer UserID;
 
     /**
     * 
@@ -55,7 +55,7 @@ public class User implements Serializable {
 
     /**
     * 
-    * isNullAble:0
+    * isNullAble:1
     */
     private String avatar;
 
@@ -74,9 +74,9 @@ public class User implements Serializable {
     private String email;
 
 
-    public void setId(Integer id){this.id = id;}
+    public void setUserID(Integer UserID){this.UserID = UserID;}
 
-    public Integer getId(){return this.id;}
+    public Integer getUserID(){return this.UserID;}
 
     public void setUsername(String username){this.username = username;}
 
@@ -112,7 +112,7 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "User{" +
-                "id='" + id + '\'' +
+                "UserID='" + UserID + '\'' +
                 "username='" + username + '\'' +
                 "password='" + password + '\'' +
                 "age='" + age + '\'' +
@@ -169,17 +169,17 @@ public class User implements Serializable {
 
         public Map<String,Object> getFetchFields(){return this.fetchFields;}
 
-        private List<Integer> idList;
+        private List<Integer> UserIDList;
 
-        public List<Integer> getIdList(){return this.idList;}
+        public List<Integer> getUserIDList(){return this.UserIDList;}
 
-        private Integer idSt;
+        private Integer UserIDSt;
 
-        private Integer idEd;
+        private Integer UserIDEd;
 
-        public Integer getIdSt(){return this.idSt;}
+        public Integer getUserIDSt(){return this.UserIDSt;}
 
-        public Integer getIdEd(){return this.idEd;}
+        public Integer getUserIDEd(){return this.UserIDEd;}
 
         private List<String> usernameList;
 
@@ -281,44 +281,44 @@ public class User implements Serializable {
             this.fetchFields = new HashMap<>();
         }
 
-        public QueryBuilder idBetWeen(Integer idSt,Integer idEd){
-            this.idSt = idSt;
-            this.idEd = idEd;
+        public QueryBuilder UserIDBetWeen(Integer UserIDSt,Integer UserIDEd){
+            this.UserIDSt = UserIDSt;
+            this.UserIDEd = UserIDEd;
             return this;
         }
 
-        public QueryBuilder idGreaterEqThan(Integer idSt){
-            this.idSt = idSt;
+        public QueryBuilder UserIDGreaterEqThan(Integer UserIDSt){
+            this.UserIDSt = UserIDSt;
             return this;
         }
-        public QueryBuilder idLessEqThan(Integer idEd){
-            this.idEd = idEd;
-            return this;
-        }
-
-
-        public QueryBuilder id(Integer id){
-            setId(id);
+        public QueryBuilder UserIDLessEqThan(Integer UserIDEd){
+            this.UserIDEd = UserIDEd;
             return this;
         }
 
-        public QueryBuilder idList(Integer ... id){
-            this.idList = solveNullList(id);
+
+        public QueryBuilder UserID(Integer UserID){
+            setUserID(UserID);
             return this;
         }
 
-        public QueryBuilder idList(List<Integer> id){
-            this.idList = id;
+        public QueryBuilder UserIDList(Integer ... UserID){
+            this.UserIDList = solveNullList(UserID);
             return this;
         }
 
-        public QueryBuilder fetchId(){
-            setFetchFields("fetchFields","id");
+        public QueryBuilder UserIDList(List<Integer> UserID){
+            this.UserIDList = UserID;
             return this;
         }
 
-        public QueryBuilder excludeId(){
-            setFetchFields("excludeFields","id");
+        public QueryBuilder fetchUserID(){
+            setFetchFields("fetchFields","UserID");
+            return this;
+        }
+
+        public QueryBuilder excludeUserID(){
+            setFetchFields("excludeFields","UserID");
             return this;
         }
 
@@ -716,17 +716,17 @@ public class User implements Serializable {
 
 
     public static class ConditionBuilder{
-        private List<Integer> idList;
+        private List<Integer> UserIDList;
 
-        public List<Integer> getIdList(){return this.idList;}
+        public List<Integer> getUserIDList(){return this.UserIDList;}
 
-        private Integer idSt;
+        private Integer UserIDSt;
 
-        private Integer idEd;
+        private Integer UserIDEd;
 
-        public Integer getIdSt(){return this.idSt;}
+        public Integer getUserIDSt(){return this.UserIDSt;}
 
-        public Integer getIdEd(){return this.idEd;}
+        public Integer getUserIDEd(){return this.UserIDEd;}
 
         private List<String> usernameList;
 
@@ -825,29 +825,29 @@ public class User implements Serializable {
 
         public List<String> getRightFuzzyEmail(){return this.rightFuzzyEmail;}
 
-        public ConditionBuilder idBetWeen(Integer idSt,Integer idEd){
-            this.idSt = idSt;
-            this.idEd = idEd;
+        public ConditionBuilder UserIDBetWeen(Integer UserIDSt,Integer UserIDEd){
+            this.UserIDSt = UserIDSt;
+            this.UserIDEd = UserIDEd;
             return this;
         }
 
-        public ConditionBuilder idGreaterEqThan(Integer idSt){
-            this.idSt = idSt;
+        public ConditionBuilder UserIDGreaterEqThan(Integer UserIDSt){
+            this.UserIDSt = UserIDSt;
             return this;
         }
-        public ConditionBuilder idLessEqThan(Integer idEd){
-            this.idEd = idEd;
-            return this;
-        }
-
-
-        public ConditionBuilder idList(Integer ... id){
-            this.idList = solveNullList(id);
+        public ConditionBuilder UserIDLessEqThan(Integer UserIDEd){
+            this.UserIDEd = UserIDEd;
             return this;
         }
 
-        public ConditionBuilder idList(List<Integer> id){
-            this.idList = id;
+
+        public ConditionBuilder UserIDList(Integer ... UserID){
+            this.UserIDList = solveNullList(UserID);
+            return this;
+        }
+
+        public ConditionBuilder UserIDList(List<Integer> UserID){
+            this.UserIDList = UserID;
             return this;
         }
 
@@ -1107,8 +1107,8 @@ public class User implements Serializable {
             this.obj = new User();
         }
 
-        public Builder id(Integer id){
-            this.obj.setId(id);
+        public Builder UserID(Integer UserID){
+            this.obj.setUserID(UserID);
             return this;
         }
         public Builder username(String username){
