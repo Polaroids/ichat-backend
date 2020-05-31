@@ -32,6 +32,13 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/api/user/register", "anon");
         filterChainDefinitionMap.put("/api/group/test", "anon");
 
+        // 不屏蔽视频页面及其静态资源，会产生问题。
+        // 最后应该不需要使用这个，暂时先放着
+        filterChainDefinitionMap.put("/video.html", "anon");
+        filterChainDefinitionMap.put("/css/**", "anon");
+        filterChainDefinitionMap.put("/img/**", "anon");
+        filterChainDefinitionMap.put("/js/**", "anon");
+
         //主要这行代码必须放在所有权限设置的最后，不然会导致所有 url 都被拦截 剩余的都需要认证
         filterChainDefinitionMap.put("/**", "authc");
 
