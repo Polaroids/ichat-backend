@@ -92,7 +92,7 @@ public class GroupImpl implements GroupService {
         List<Members> members = membersMapper.queryMembers(Members.QueryBuild().groupID(groupID).build());
         List<Integer> membersID = new ArrayList<>();
         for (Members member:members){
-            membersID.add( member.getID());
+            membersID.add( member.getMemberID());
         }
         if (members.size() == 0)
             throw new Exception("无成员，未知异常");
@@ -105,7 +105,7 @@ public class GroupImpl implements GroupService {
         List<Members> members= membersMapper.queryMembers(Members.QueryBuild().memberID(userID));
         List<Integer> groupIDs  = new ArrayList<>();
         for (Members member:members){
-            groupIDs.add(member.getMemberID());
+            groupIDs.add(member.getGroupID());
         }
 
         return groupMapper.queryGroup(Group.QueryBuild().groupIDList(groupIDs).build());
