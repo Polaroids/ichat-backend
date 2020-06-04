@@ -2,8 +2,10 @@ package org.buaa.ichat.service.impl;
 
 import org.buaa.ichat.entity.Group;
 import org.buaa.ichat.entity.Members;
+import org.buaa.ichat.entity.User;
 import org.buaa.ichat.mapper.GroupMapper;
 import org.buaa.ichat.mapper.MembersMapper;
+import org.buaa.ichat.mapper.UserMapper;
 import org.buaa.ichat.service.FriendService;
 import org.buaa.ichat.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,8 @@ public class GroupImpl implements GroupService {
     MembersMapper membersMapper;
     @Autowired
     FriendService friendService;
+    @Autowired
+    UserMapper userMapper;
     @Override
     public void create(Integer userID, String name, String des, String avatar, String[] members)throws Exception {
         Group group = Group.Build()
@@ -63,18 +67,48 @@ public class GroupImpl implements GroupService {
     public void invite(Integer userID, Integer groupID, Integer friendID)throws Exception {
         if (!friendService.isFriend(userID,friendID))
             throw new Exception("不可邀请非好友");
-        if (!isManager(userID,groupID))
-            throw new Exception("只有管理员可以邀请好友入群");
+//        if (!isManager(userID,groupID))
+//            throw new Exception("只有管理员可以邀请好友入群");
         membersMapper.insertMembers(Members.Build().groupID(groupID).inviterID(userID).memberID(friendID).build());
     }
 
     @Override
     public void quit(Integer userID, Integer groupID) throws Exception{
+        if (groupID == null)
+            throw new Exception("groupID不可为空");
         //BUG，群主解散未考虑
         if (
         membersMapper.queryMembersLimit1(Members.Build().memberID(userID).groupID(groupID).build()) == null)
             throw new Exception("操作失败，您已不在当前的群中");
         membersMapper.quit(userID,groupID);
+    }
+
+    @Override
+    public List<User> getMembers(Integer groupID) throws Exception {
+        if (groupID == null)
+            throw new Exception("groupID不可为空");
+        if (null==groupMapper.queryGroupLimit1(Group.QueryBuild().groupID(groupID).build()))
+            throw new  Exception("该群聊不存在");
+        List<Members> members = membersMapper.queryMembers(Members.QueryBuild().groupID(groupID).build());
+        List<Integer> membersID = new ArrayList<>();
+        for (Members member:members){
+            membersID.add( member.getID());
+        }
+        if (members.size() == 0)
+            throw new Exception("无成员，未知异常");
+        return userMapper.queryUser(User.QueryBuild().UserIDList(membersID));
+    }
+
+    @Override
+    public List<Group> getGroups(Integer userID) {
+
+        List<Members> members= membersMapper.queryMembers(Members.QueryBuild().memberID(userID));
+        List<Integer> groupIDs  = new ArrayList<>();
+        for (Members member:members){
+            groupIDs.add(member.getMemberID());
+        }
+
+        return groupMapper.queryGroup(Group.QueryBuild().groupIDList(groupIDs).build());
     }
 }
 

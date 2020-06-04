@@ -1,0 +1,585 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.buaa.ichat.mapper.base.MessageBaseMapper">
+
+
+    <insert id="insertMessage"  useGeneratedKeys="true" keyProperty="messageID">
+        INSERT INTO `Message`
+        (
+        <trim suffixOverrides=",">
+                    <if test="messageID!=null">
+                        `messageID`,
+                    </if>
+                    <if test="content!=null">
+                        `content`,
+                    </if>
+                    <if test="sent!=null">
+                        `sent`,
+                    </if>
+                    <if test="sentTime!=null">
+                        `sentTime`,
+                    </if>
+                    <if test="type!=null">
+                        `type`,
+                    </if>
+                    <if test="senderID!=null">
+                        `senderID`,
+                    </if>
+                    <if test="receiverID!=null">
+                        `receiverID`,
+                    </if>
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffixOverrides=",">
+                <if test="messageID!=null">
+                    #{messageID},
+                </if>
+                <if test="content!=null">
+                    #{content},
+                </if>
+                <if test="sent!=null">
+                    #{sent},
+                </if>
+                <if test="sentTime!=null">
+                    #{sentTime},
+                </if>
+                <if test="type!=null">
+                    #{type},
+                </if>
+                <if test="senderID!=null">
+                    #{senderID},
+                </if>
+                <if test="receiverID!=null">
+                    #{receiverID},
+                </if>
+        </trim>
+        )
+    </insert>
+
+
+
+
+    <update id="updateMessage">
+        UPDATE `Message`
+        SET
+        <trim suffixOverrides=",">
+            <if test="content != null and content!=''">
+                `content` = #{content},
+            </if>
+            <if test="sent != null">
+                `sent` = #{sent},
+            </if>
+            <if test="sentTime != null and sentTime!=''">
+                `sentTime` = #{sentTime},
+            </if>
+            <if test="type != null">
+                `type` = #{type},
+            </if>
+            <if test="senderID != null">
+                `senderID` = #{senderID},
+            </if>
+            <if test="receiverID != null">
+                `receiverID` = #{receiverID},
+            </if>
+        </trim>
+        WHERE
+        <trim suffixOverrides="and">
+                `messageID` = #{messageID} and
+        </trim>
+    </update>
+
+    <update id="update">
+        UPDATE `Message`
+        SET
+        <trim suffixOverrides=",">
+        <if test="set.content != null and set.content!=''">
+            `content` = #{set.content},
+        </if>
+        <if test="set.sent != null">
+            `sent` = #{set.sent},
+        </if>
+        <if test="set.sentTime != null and set.sentTime!=''">
+            `sentTime` = #{set.sentTime},
+        </if>
+        <if test="set.type != null">
+            `type` = #{set.type},
+        </if>
+        <if test="set.senderID != null">
+            `senderID` = #{set.senderID},
+        </if>
+        <if test="set.receiverID != null">
+            `receiverID` = #{set.receiverID},
+        </if>
+        </trim>
+        <trim prefix="where" suffixOverrides="and | or">
+                <if test="where.messageIDList != null">
+                    `messageID` in
+                    <foreach collection="where.messageIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.messageIDSt !=null">
+                `messageID` >= #{where.messageIDSt} and
+            </if>
+            <if test="where.messageIDEd!=null">
+                `messageID` &lt;= #{where.messageIDEd} and
+            </if>
+                <if test="where.contentList != null">
+                    `content` in
+                    <foreach collection="where.contentList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test ="where.fuzzyContent!=null and where.fuzzyContent.size()>0">
+                (
+                <foreach collection="where.fuzzyContent"  separator="or" item="item">
+                    `Content` like concat('%',#{item},'%')
+                </foreach>
+                ) and
+            </if>
+            <if test ="where.rightFuzzyContent!=null and where.rightFuzzyContent.size()>0">
+                (
+                <foreach collection="where.rightFuzzyContent"  separator="or" item="item">
+                    `Content` like concat(#{item},'%')
+                </foreach>
+                ) and
+            </if>
+                <if test="where.sentList != null">
+                    `sent` in
+                    <foreach collection="where.sentList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.sentSt !=null">
+                `sent` >= #{where.sentSt} and
+            </if>
+            <if test="where.sentEd!=null">
+                `sent` &lt;= #{where.sentEd} and
+            </if>
+                <if test="where.sentTimeList != null">
+                    `sentTime` in
+                    <foreach collection="where.sentTimeList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test ="where.fuzzySentTime!=null and where.fuzzySentTime.size()>0">
+                (
+                <foreach collection="where.fuzzySentTime"  separator="or" item="item">
+                    `SentTime` like concat('%',#{item},'%')
+                </foreach>
+                ) and
+            </if>
+            <if test ="where.rightFuzzySentTime!=null and where.rightFuzzySentTime.size()>0">
+                (
+                <foreach collection="where.rightFuzzySentTime"  separator="or" item="item">
+                    `SentTime` like concat(#{item},'%')
+                </foreach>
+                ) and
+            </if>
+                <if test="where.typeList != null">
+                    `type` in
+                    <foreach collection="where.typeList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.typeSt !=null">
+                `type` >= #{where.typeSt} and
+            </if>
+            <if test="where.typeEd!=null">
+                `type` &lt;= #{where.typeEd} and
+            </if>
+                <if test="where.senderIDList != null">
+                    `senderID` in
+                    <foreach collection="where.senderIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.senderIDSt !=null">
+                `senderID` >= #{where.senderIDSt} and
+            </if>
+            <if test="where.senderIDEd!=null">
+                `senderID` &lt;= #{where.senderIDEd} and
+            </if>
+                <if test="where.receiverIDList != null">
+                    `receiverID` in
+                    <foreach collection="where.receiverIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.receiverIDSt !=null">
+                `receiverID` >= #{where.receiverIDSt} and
+            </if>
+            <if test="where.receiverIDEd!=null">
+                `receiverID` &lt;= #{where.receiverIDEd} and
+            </if>
+        </trim>
+    </update>
+
+
+    <resultMap type="org.buaa.ichat.entity.Message" id="MessageMap">
+        <result property="messageID" column="messageID"/>
+        <result property="content" column="content"/>
+        <result property="sent" column="sent"/>
+        <result property="sentTime" column="sentTime"/>
+        <result property="type" column="type"/>
+        <result property="senderID" column="senderID"/>
+        <result property="receiverID" column="receiverID"/>
+    </resultMap>
+
+
+    <select id="queryMessage" resultMap="MessageMap">
+        select
+        <include refid="baseResult"></include>
+        from  `Message`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="messageID != null">
+                `messageID` = #{messageID} and
+            </if>
+            <if test="content != null and content!=''">
+                `content` = #{content} and
+            </if>
+            <if test="sent != null">
+                `sent` = #{sent} and
+            </if>
+            <if test="sentTime != null and sentTime!=''">
+                `sentTime` = #{sentTime} and
+            </if>
+            <if test="type != null">
+                `type` = #{type} and
+            </if>
+            <if test="senderID != null">
+                `senderID` = #{senderID} and
+            </if>
+            <if test="receiverID != null">
+                `receiverID` = #{receiverID} and
+            </if>
+            <if test = "(_parameter instanceof org.buaa.ichat.entity.Message$QueryBuilder) == true">
+                <if test="messageIDList != null">
+                    `messageID` in
+                    <foreach collection="messageIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="messageIDSt !=null">
+                    `messageID` >= #{messageIDSt} and
+                </if>
+                <if test="messageIDEd!=null">
+                    `messageID` &lt;= #{messageIDEd} and
+                </if>
+                <if test="contentList != null">
+                    `content` in
+                    <foreach collection="contentList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test ="fuzzyContent!=null and fuzzyContent.size()>0">
+                    (
+                    <foreach collection="fuzzyContent"  separator="or" item="item">
+                        `Content` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyContent!=null and rightFuzzyContent.size()>0">
+                    (
+                    <foreach collection="rightFuzzyContent"  separator="or" item="item">
+                        `Content` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test="sentList != null">
+                    `sent` in
+                    <foreach collection="sentList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="sentSt !=null">
+                    `sent` >= #{sentSt} and
+                </if>
+                <if test="sentEd!=null">
+                    `sent` &lt;= #{sentEd} and
+                </if>
+                <if test="sentTimeList != null">
+                    `sentTime` in
+                    <foreach collection="sentTimeList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test ="fuzzySentTime!=null and fuzzySentTime.size()>0">
+                    (
+                    <foreach collection="fuzzySentTime"  separator="or" item="item">
+                        `SentTime` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzySentTime!=null and rightFuzzySentTime.size()>0">
+                    (
+                    <foreach collection="rightFuzzySentTime"  separator="or" item="item">
+                        `SentTime` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test="typeList != null">
+                    `type` in
+                    <foreach collection="typeList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="typeSt !=null">
+                    `type` >= #{typeSt} and
+                </if>
+                <if test="typeEd!=null">
+                    `type` &lt;= #{typeEd} and
+                </if>
+                <if test="senderIDList != null">
+                    `senderID` in
+                    <foreach collection="senderIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="senderIDSt !=null">
+                    `senderID` >= #{senderIDSt} and
+                </if>
+                <if test="senderIDEd!=null">
+                    `senderID` &lt;= #{senderIDEd} and
+                </if>
+                <if test="receiverIDList != null">
+                    `receiverID` in
+                    <foreach collection="receiverIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="receiverIDSt !=null">
+                    `receiverID` >= #{receiverIDSt} and
+                </if>
+                <if test="receiverIDEd!=null">
+                    `receiverID` &lt;= #{receiverIDEd} and
+                </if>
+            </if>
+        </trim>
+    </select>
+
+    <select id="queryMessageLimit1" resultMap="MessageMap">
+        select
+        <include refid="baseResult"></include>
+        from  `Message`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="messageID != null">
+                `messageID` = #{messageID} and
+            </if>
+            <if test="content != null and content!=''">
+                `content` = #{content} and
+            </if>
+            <if test="sent != null">
+                `sent` = #{sent} and
+            </if>
+            <if test="sentTime != null and sentTime!=''">
+                `sentTime` = #{sentTime} and
+            </if>
+            <if test="type != null">
+                `type` = #{type} and
+            </if>
+            <if test="senderID != null">
+                `senderID` = #{senderID} and
+            </if>
+            <if test="receiverID != null">
+                `receiverID` = #{receiverID} and
+            </if>
+            <if test = "(_parameter instanceof org.buaa.ichat.entity.Message$QueryBuilder) == true">
+                    <if test="messageIDList != null">
+                        `messageID` in
+                        <foreach collection="messageIDList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="messageIDSt !=null">
+                    `messageID` >= #{messageIDSt} and
+                </if>
+                <if test="messageIDEd!=null">
+                    `messageID` &lt;= #{messageIDEd} and
+                </if>
+                    <if test="contentList != null">
+                        `content` in
+                        <foreach collection="contentList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test ="fuzzyContent!=null and fuzzyContent.size()>0">
+                    (
+                    <foreach collection="fuzzyContent"  separator="or" item="item">
+                        `Content` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyContent!=null and rightFuzzyContent.size()>0">
+                    (
+                    <foreach collection="rightFuzzyContent"  separator="or" item="item">
+                        `Content` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                    <if test="sentList != null">
+                        `sent` in
+                        <foreach collection="sentList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="sentSt !=null">
+                    `sent` >= #{sentSt} and
+                </if>
+                <if test="sentEd!=null">
+                    `sent` &lt;= #{sentEd} and
+                </if>
+                    <if test="sentTimeList != null">
+                        `sentTime` in
+                        <foreach collection="sentTimeList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test ="fuzzySentTime!=null and fuzzySentTime.size()>0">
+                    (
+                    <foreach collection="fuzzySentTime"  separator="or" item="item">
+                        `SentTime` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzySentTime!=null and rightFuzzySentTime.size()>0">
+                    (
+                    <foreach collection="rightFuzzySentTime"  separator="or" item="item">
+                        `SentTime` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                    <if test="typeList != null">
+                        `type` in
+                        <foreach collection="typeList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="typeSt !=null">
+                    `type` >= #{typeSt} and
+                </if>
+                <if test="typeEd!=null">
+                    `type` &lt;= #{typeEd} and
+                </if>
+                    <if test="senderIDList != null">
+                        `senderID` in
+                        <foreach collection="senderIDList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="senderIDSt !=null">
+                    `senderID` >= #{senderIDSt} and
+                </if>
+                <if test="senderIDEd!=null">
+                    `senderID` &lt;= #{senderIDEd} and
+                </if>
+                    <if test="receiverIDList != null">
+                        `receiverID` in
+                        <foreach collection="receiverIDList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="receiverIDSt !=null">
+                    `receiverID` >= #{receiverIDSt} and
+                </if>
+                <if test="receiverIDEd!=null">
+                    `receiverID` &lt;= #{receiverIDEd} and
+                </if>
+            </if>
+        </trim>
+        limit 1
+    </select>
+
+    <sql id="allResult">
+        <trim suffixOverrides=",">
+        `messageID`,
+        `content`,
+        `sent`,
+        `sentTime`,
+        `type`,
+        `senderID`,
+        `receiverID`,
+        </trim>
+    </sql>
+
+
+
+    <sql id="baseResult">
+        <trim suffixOverrides=",">
+            <if test = "(_parameter instanceof org.buaa.ichat.entity.Message$QueryBuilder) == true">
+
+                <if test="fetchFields==null">
+                    <include refid="allResult"></include>
+                </if>
+                <if test="fetchFields!=null">
+                    <if test="fetchFields.AllFields !=null">
+                        <include refid="allResult"></include>
+                    </if>
+                    <if test="fetchFields.AllFields ==null and fetchFields.fetchFields==null and fetchFields.excludeFields==null and fetchFields.otherFields==null">
+                        <include refid="allResult"></include>
+                    </if>
+                    <if test="fetchFields.AllFields==null and fetchFields.fetchFields!=null">
+                    <if test="fetchFields.fetchFields.messageID==true">
+                        `messageID`,
+                    </if>
+                    <if test="fetchFields.fetchFields.content==true">
+                        `content`,
+                    </if>
+                    <if test="fetchFields.fetchFields.sent==true">
+                        `sent`,
+                    </if>
+                    <if test="fetchFields.fetchFields.sentTime==true">
+                        `sentTime`,
+                    </if>
+                    <if test="fetchFields.fetchFields.type==true">
+                        `type`,
+                    </if>
+                    <if test="fetchFields.fetchFields.senderID==true">
+                        `senderID`,
+                    </if>
+                    <if test="fetchFields.fetchFields.receiverID==true">
+                        `receiverID`,
+                    </if>
+                    </if>
+                    <if test="fetchFields.AllFields==null and fetchFields.excludeFields!=null">
+                    <if test="fetchFields.excludeFields.messageID==null">
+                        `messageID`,
+                    </if>
+                    <if test="fetchFields.excludeFields.content==null">
+                        `content`,
+                    </if>
+                    <if test="fetchFields.excludeFields.sent==null">
+                        `sent`,
+                    </if>
+                    <if test="fetchFields.excludeFields.sentTime==null">
+                        `sentTime`,
+                    </if>
+                    <if test="fetchFields.excludeFields.type==null">
+                        `type`,
+                    </if>
+                    <if test="fetchFields.excludeFields.senderID==null">
+                        `senderID`,
+                    </if>
+                    <if test="fetchFields.excludeFields.receiverID==null">
+                        `receiverID`,
+                    </if>
+                    </if>
+                    <if test="fetchFields.otherFields!=null and fetchFields.otherFields.size>0">
+                        <foreach collection="fetchFields.otherFields" index="index" item="item" separator=",">
+                        `#{item}`
+                        </foreach>
+                    </if>
+                </if>
+            </if>
+            <if test="(_parameter instanceof org.buaa.ichat.entity.Message$QueryBuilder) == false" >
+                <include refid="allResult"></include>
+            </if>
+
+        </trim>
+    </sql>
+
+
+</mapper>

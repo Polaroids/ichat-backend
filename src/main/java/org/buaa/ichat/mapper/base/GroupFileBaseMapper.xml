@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.buaa.ichat.mapper.base.GroupFileBaseMapper">
+
+
+    <insert id="insertGroupFile"  useGeneratedKeys="true" keyProperty="fileID">
+        INSERT INTO `GroupFile`
+        (
+        <trim suffixOverrides=",">
+                    <if test="fileID!=null">
+                        `fileID`,
+                    </if>
+                    <if test="fileName!=null">
+                        `fileName`,
+                    </if>
+                    <if test="fileUrl!=null">
+                        `fileUrl`,
+                    </if>
+                    <if test="uploadTime!=null">
+                        `uploadTime`,
+                    </if>
+                    <if test="uploadGroupID!=null">
+                        `uploadGroupID`,
+                    </if>
+                    <if test="uploadUserID!=null">
+                        `uploadUserID`,
+                    </if>
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffixOverrides=",">
+                <if test="fileID!=null">
+                    #{fileID},
+                </if>
+                <if test="fileName!=null">
+                    #{fileName},
+                </if>
+                <if test="fileUrl!=null">
+                    #{fileUrl},
+                </if>
+                <if test="uploadTime!=null">
+                    #{uploadTime},
+                </if>
+                <if test="uploadGroupID!=null">
+                    #{uploadGroupID},
+                </if>
+                <if test="uploadUserID!=null">
+                    #{uploadUserID},
+                </if>
+        </trim>
+        )
+    </insert>
+
+
+
+
+    <update id="updateGroupFile">
+        UPDATE `GroupFile`
+        SET
+        <trim suffixOverrides=",">
+            <if test="fileName != null and fileName!=''">
+                `fileName` = #{fileName},
+            </if>
+            <if test="fileUrl != null and fileUrl!=''">
+                `fileUrl` = #{fileUrl},
+            </if>
+            <if test="uploadTime != null and uploadTime!=''">
+                `uploadTime` = #{uploadTime},
+            </if>
+            <if test="uploadGroupID != null">
+                `uploadGroupID` = #{uploadGroupID},
+            </if>
+            <if test="uploadUserID != null">
+                `uploadUserID` = #{uploadUserID},
+            </if>
+        </trim>
+        WHERE
+        <trim suffixOverrides="and">
+                `fileID` = #{fileID} and
+        </trim>
+    </update>
+
+    <update id="update">
+        UPDATE `GroupFile`
+        SET
+        <trim suffixOverrides=",">
+        <if test="set.fileName != null and set.fileName!=''">
+            `fileName` = #{set.fileName},
+        </if>
+        <if test="set.fileUrl != null and set.fileUrl!=''">
+            `fileUrl` = #{set.fileUrl},
+        </if>
+        <if test="set.uploadTime != null and set.uploadTime!=''">
+            `uploadTime` = #{set.uploadTime},
+        </if>
+        <if test="set.uploadGroupID != null">
+            `uploadGroupID` = #{set.uploadGroupID},
+        </if>
+        <if test="set.uploadUserID != null">
+            `uploadUserID` = #{set.uploadUserID},
+        </if>
+        </trim>
+        <trim prefix="where" suffixOverrides="and | or">
+                <if test="where.fileIDList != null">
+                    `fileID` in
+                    <foreach collection="where.fileIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.fileIDSt !=null">
+                `fileID` >= #{where.fileIDSt} and
+            </if>
+            <if test="where.fileIDEd!=null">
+                `fileID` &lt;= #{where.fileIDEd} and
+            </if>
+                <if test="where.fileNameList != null">
+                    `fileName` in
+                    <foreach collection="where.fileNameList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test ="where.fuzzyFileName!=null and where.fuzzyFileName.size()>0">
+                (
+                <foreach collection="where.fuzzyFileName"  separator="or" item="item">
+                    `FileName` like concat('%',#{item},'%')
+                </foreach>
+                ) and
+            </if>
+            <if test ="where.rightFuzzyFileName!=null and where.rightFuzzyFileName.size()>0">
+                (
+                <foreach collection="where.rightFuzzyFileName"  separator="or" item="item">
+                    `FileName` like concat(#{item},'%')
+                </foreach>
+                ) and
+            </if>
+                <if test="where.fileUrlList != null">
+                    `fileUrl` in
+                    <foreach collection="where.fileUrlList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test ="where.fuzzyFileUrl!=null and where.fuzzyFileUrl.size()>0">
+                (
+                <foreach collection="where.fuzzyFileUrl"  separator="or" item="item">
+                    `FileUrl` like concat('%',#{item},'%')
+                </foreach>
+                ) and
+            </if>
+            <if test ="where.rightFuzzyFileUrl!=null and where.rightFuzzyFileUrl.size()>0">
+                (
+                <foreach collection="where.rightFuzzyFileUrl"  separator="or" item="item">
+                    `FileUrl` like concat(#{item},'%')
+                </foreach>
+                ) and
+            </if>
+                <if test="where.uploadTimeList != null">
+                    `uploadTime` in
+                    <foreach collection="where.uploadTimeList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test ="where.fuzzyUploadTime!=null and where.fuzzyUploadTime.size()>0">
+                (
+                <foreach collection="where.fuzzyUploadTime"  separator="or" item="item">
+                    `UploadTime` like concat('%',#{item},'%')
+                </foreach>
+                ) and
+            </if>
+            <if test ="where.rightFuzzyUploadTime!=null and where.rightFuzzyUploadTime.size()>0">
+                (
+                <foreach collection="where.rightFuzzyUploadTime"  separator="or" item="item">
+                    `UploadTime` like concat(#{item},'%')
+                </foreach>
+                ) and
+            </if>
+                <if test="where.uploadGroupIDList != null">
+                    `uploadGroupID` in
+                    <foreach collection="where.uploadGroupIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.uploadGroupIDSt !=null">
+                `uploadGroupID` >= #{where.uploadGroupIDSt} and
+            </if>
+            <if test="where.uploadGroupIDEd!=null">
+                `uploadGroupID` &lt;= #{where.uploadGroupIDEd} and
+            </if>
+                <if test="where.uploadUserIDList != null">
+                    `uploadUserID` in
+                    <foreach collection="where.uploadUserIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.uploadUserIDSt !=null">
+                `uploadUserID` >= #{where.uploadUserIDSt} and
+            </if>
+            <if test="where.uploadUserIDEd!=null">
+                `uploadUserID` &lt;= #{where.uploadUserIDEd} and
+            </if>
+        </trim>
+    </update>
+
+
+    <resultMap type="org.buaa.ichat.entity.GroupFile" id="GroupFileMap">
+        <result property="fileID" column="fileID"/>
+        <result property="fileName" column="fileName"/>
+        <result property="fileUrl" column="fileUrl"/>
+        <result property="uploadTime" column="uploadTime"/>
+        <result property="uploadGroupID" column="uploadGroupID"/>
+        <result property="uploadUserID" column="uploadUserID"/>
+    </resultMap>
+
+
+    <select id="queryGroupFile" resultMap="GroupFileMap">
+        select
+        <include refid="baseResult"></include>
+        from  `GroupFile`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="fileID != null">
+                `fileID` = #{fileID} and
+            </if>
+            <if test="fileName != null and fileName!=''">
+                `fileName` = #{fileName} and
+            </if>
+            <if test="fileUrl != null and fileUrl!=''">
+                `fileUrl` = #{fileUrl} and
+            </if>
+            <if test="uploadTime != null and uploadTime!=''">
+                `uploadTime` = #{uploadTime} and
+            </if>
+            <if test="uploadGroupID != null">
+                `uploadGroupID` = #{uploadGroupID} and
+            </if>
+            <if test="uploadUserID != null">
+                `uploadUserID` = #{uploadUserID} and
+            </if>
+            <if test = "(_parameter instanceof org.buaa.ichat.entity.GroupFile$QueryBuilder) == true">
+                <if test="fileIDList != null">
+                    `fileID` in
+                    <foreach collection="fileIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="fileIDSt !=null">
+                    `fileID` >= #{fileIDSt} and
+                </if>
+                <if test="fileIDEd!=null">
+                    `fileID` &lt;= #{fileIDEd} and
+                </if>
+                <if test="fileNameList != null">
+                    `fileName` in
+                    <foreach collection="fileNameList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test ="fuzzyFileName!=null and fuzzyFileName.size()>0">
+                    (
+                    <foreach collection="fuzzyFileName"  separator="or" item="item">
+                        `FileName` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyFileName!=null and rightFuzzyFileName.size()>0">
+                    (
+                    <foreach collection="rightFuzzyFileName"  separator="or" item="item">
+                        `FileName` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test="fileUrlList != null">
+                    `fileUrl` in
+                    <foreach collection="fileUrlList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test ="fuzzyFileUrl!=null and fuzzyFileUrl.size()>0">
+                    (
+                    <foreach collection="fuzzyFileUrl"  separator="or" item="item">
+                        `FileUrl` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyFileUrl!=null and rightFuzzyFileUrl.size()>0">
+                    (
+                    <foreach collection="rightFuzzyFileUrl"  separator="or" item="item">
+                        `FileUrl` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test="uploadTimeList != null">
+                    `uploadTime` in
+                    <foreach collection="uploadTimeList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test ="fuzzyUploadTime!=null and fuzzyUploadTime.size()>0">
+                    (
+                    <foreach collection="fuzzyUploadTime"  separator="or" item="item">
+                        `UploadTime` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyUploadTime!=null and rightFuzzyUploadTime.size()>0">
+                    (
+                    <foreach collection="rightFuzzyUploadTime"  separator="or" item="item">
+                        `UploadTime` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test="uploadGroupIDList != null">
+                    `uploadGroupID` in
+                    <foreach collection="uploadGroupIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="uploadGroupIDSt !=null">
+                    `uploadGroupID` >= #{uploadGroupIDSt} and
+                </if>
+                <if test="uploadGroupIDEd!=null">
+                    `uploadGroupID` &lt;= #{uploadGroupIDEd} and
+                </if>
+                <if test="uploadUserIDList != null">
+                    `uploadUserID` in
+                    <foreach collection="uploadUserIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="uploadUserIDSt !=null">
+                    `uploadUserID` >= #{uploadUserIDSt} and
+                </if>
+                <if test="uploadUserIDEd!=null">
+                    `uploadUserID` &lt;= #{uploadUserIDEd} and
+                </if>
+            </if>
+        </trim>
+    </select>
+
+    <select id="queryGroupFileLimit1" resultMap="GroupFileMap">
+        select
+        <include refid="baseResult"></include>
+        from  `GroupFile`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="fileID != null">
+                `fileID` = #{fileID} and
+            </if>
+            <if test="fileName != null and fileName!=''">
+                `fileName` = #{fileName} and
+            </if>
+            <if test="fileUrl != null and fileUrl!=''">
+                `fileUrl` = #{fileUrl} and
+            </if>
+            <if test="uploadTime != null and uploadTime!=''">
+                `uploadTime` = #{uploadTime} and
+            </if>
+            <if test="uploadGroupID != null">
+                `uploadGroupID` = #{uploadGroupID} and
+            </if>
+            <if test="uploadUserID != null">
+                `uploadUserID` = #{uploadUserID} and
+            </if>
+            <if test = "(_parameter instanceof org.buaa.ichat.entity.GroupFile$QueryBuilder) == true">
+                    <if test="fileIDList != null">
+                        `fileID` in
+                        <foreach collection="fileIDList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="fileIDSt !=null">
+                    `fileID` >= #{fileIDSt} and
+                </if>
+                <if test="fileIDEd!=null">
+                    `fileID` &lt;= #{fileIDEd} and
+                </if>
+                    <if test="fileNameList != null">
+                        `fileName` in
+                        <foreach collection="fileNameList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test ="fuzzyFileName!=null and fuzzyFileName.size()>0">
+                    (
+                    <foreach collection="fuzzyFileName"  separator="or" item="item">
+                        `FileName` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyFileName!=null and rightFuzzyFileName.size()>0">
+                    (
+                    <foreach collection="rightFuzzyFileName"  separator="or" item="item">
+                        `FileName` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                    <if test="fileUrlList != null">
+                        `fileUrl` in
+                        <foreach collection="fileUrlList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test ="fuzzyFileUrl!=null and fuzzyFileUrl.size()>0">
+                    (
+                    <foreach collection="fuzzyFileUrl"  separator="or" item="item">
+                        `FileUrl` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyFileUrl!=null and rightFuzzyFileUrl.size()>0">
+                    (
+                    <foreach collection="rightFuzzyFileUrl"  separator="or" item="item">
+                        `FileUrl` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                    <if test="uploadTimeList != null">
+                        `uploadTime` in
+                        <foreach collection="uploadTimeList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test ="fuzzyUploadTime!=null and fuzzyUploadTime.size()>0">
+                    (
+                    <foreach collection="fuzzyUploadTime"  separator="or" item="item">
+                        `UploadTime` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyUploadTime!=null and rightFuzzyUploadTime.size()>0">
+                    (
+                    <foreach collection="rightFuzzyUploadTime"  separator="or" item="item">
+                        `UploadTime` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                    <if test="uploadGroupIDList != null">
+                        `uploadGroupID` in
+                        <foreach collection="uploadGroupIDList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="uploadGroupIDSt !=null">
+                    `uploadGroupID` >= #{uploadGroupIDSt} and
+                </if>
+                <if test="uploadGroupIDEd!=null">
+                    `uploadGroupID` &lt;= #{uploadGroupIDEd} and
+                </if>
+                    <if test="uploadUserIDList != null">
+                        `uploadUserID` in
+                        <foreach collection="uploadUserIDList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="uploadUserIDSt !=null">
+                    `uploadUserID` >= #{uploadUserIDSt} and
+                </if>
+                <if test="uploadUserIDEd!=null">
+                    `uploadUserID` &lt;= #{uploadUserIDEd} and
+                </if>
+            </if>
+        </trim>
+        limit 1
+    </select>
+
+    <sql id="allResult">
+        <trim suffixOverrides=",">
+        `fileID`,
+        `fileName`,
+        `fileUrl`,
+        `uploadTime`,
+        `uploadGroupID`,
+        `uploadUserID`,
+        </trim>
+    </sql>
+
+
+
+    <sql id="baseResult">
+        <trim suffixOverrides=",">
+            <if test = "(_parameter instanceof org.buaa.ichat.entity.GroupFile$QueryBuilder) == true">
+
+                <if test="fetchFields==null">
+                    <include refid="allResult"></include>
+                </if>
+                <if test="fetchFields!=null">
+                    <if test="fetchFields.AllFields !=null">
+                        <include refid="allResult"></include>
+                    </if>
+                    <if test="fetchFields.AllFields ==null and fetchFields.fetchFields==null and fetchFields.excludeFields==null and fetchFields.otherFields==null">
+                        <include refid="allResult"></include>
+                    </if>
+                    <if test="fetchFields.AllFields==null and fetchFields.fetchFields!=null">
+                    <if test="fetchFields.fetchFields.fileID==true">
+                        `fileID`,
+                    </if>
+                    <if test="fetchFields.fetchFields.fileName==true">
+                        `fileName`,
+                    </if>
+                    <if test="fetchFields.fetchFields.fileUrl==true">
+                        `fileUrl`,
+                    </if>
+                    <if test="fetchFields.fetchFields.uploadTime==true">
+                        `uploadTime`,
+                    </if>
+                    <if test="fetchFields.fetchFields.uploadGroupID==true">
+                        `uploadGroupID`,
+                    </if>
+                    <if test="fetchFields.fetchFields.uploadUserID==true">
+                        `uploadUserID`,
+                    </if>
+                    </if>
+                    <if test="fetchFields.AllFields==null and fetchFields.excludeFields!=null">
+                    <if test="fetchFields.excludeFields.fileID==null">
+                        `fileID`,
+                    </if>
+                    <if test="fetchFields.excludeFields.fileName==null">
+                        `fileName`,
+                    </if>
+                    <if test="fetchFields.excludeFields.fileUrl==null">
+                        `fileUrl`,
+                    </if>
+                    <if test="fetchFields.excludeFields.uploadTime==null">
+                        `uploadTime`,
+                    </if>
+                    <if test="fetchFields.excludeFields.uploadGroupID==null">
+                        `uploadGroupID`,
+                    </if>
+                    <if test="fetchFields.excludeFields.uploadUserID==null">
+                        `uploadUserID`,
+                    </if>
+                    </if>
+                    <if test="fetchFields.otherFields!=null and fetchFields.otherFields.size>0">
+                        <foreach collection="fetchFields.otherFields" index="index" item="item" separator=",">
+                        `#{item}`
+                        </foreach>
+                    </if>
+                </if>
+            </if>
+            <if test="(_parameter instanceof org.buaa.ichat.entity.GroupFile$QueryBuilder) == false" >
+                <include refid="allResult"></include>
+            </if>
+
+        </trim>
+    </sql>
+
+
+</mapper>

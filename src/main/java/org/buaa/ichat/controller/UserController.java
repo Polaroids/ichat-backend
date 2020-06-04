@@ -64,8 +64,7 @@ public class UserController {
 
     @GetMapping(value = "/info")
     public RetResult<Object> person(Integer ID){
-        Subject subject = SecurityUtils.getSubject();
-        Integer userID = new Integer ((String)subject.getPrincipal());
+        Integer userID = getUserID();
         try {
             if (ID != null)
                 userID = ID;
@@ -75,5 +74,30 @@ public class UserController {
             return RetResponse.makeErrRsp(e.getMessage());
         }
     }
+    @PostMapping({"update"})
+    public RetResult<Object> update(String info, String username, String password, String avatar, Integer sex,Integer age){
 
+        try {
+            userService.update(getUserID().toString(),info,username,password,avatar,sex,age);
+            return RetResponse.makeOKRsp();
+        }
+        catch (Exception e){
+            return RetResponse.makeErrRsp(e.getMessage());
+        }
+    }
+    public Integer getUserID(){
+        Subject subject = SecurityUtils.getSubject();
+        return new Integer ((String)subject.getPrincipal());
+    }
+    @PostMapping({"searchUsers"})
+    public RetResult<Object> search(String userName,Integer userID){
+        try {
+            if (userID != null)
+                return RetResponse.makeOKRsp(userService.getInfo(userID));
+            return RetResponse.makeOKRsp(userService.searchByName(userName));
+        }
+        catch (Exception e){
+            return RetResponse.makeErrRsp(e.getMessage());
+        }
+    }
 }
