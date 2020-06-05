@@ -42,6 +42,7 @@ public class UserImpl implements UserService {
     public User getInfo(Integer userID) throws Exception {
         User con = User.QueryBuild().UserID(userID).build();
         User ans =  userMapper.queryUserLimit1(con);
+
         if (ans == null)
             throw new Exception("不存在的用户");
         return ans;

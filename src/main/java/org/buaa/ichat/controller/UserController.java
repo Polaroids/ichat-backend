@@ -4,6 +4,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
 import org.buaa.ichat.service.UserService;
+import org.buaa.ichat.service.AvatarService;
 import org.buaa.ichat.tool.RetResponse;
 import org.buaa.ichat.tool.RetResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private AvatarService avatarService;
+
     //@Value("${serviceUrl}")
     //String url;
     @PostMapping({"login"})
@@ -99,5 +103,25 @@ public class UserController {
         catch (Exception e){
             return RetResponse.makeErrRsp(e.getMessage());
         }
+    }
+
+    @PostMapping("uploadavatar")
+    public RetResult<Object> UploadUserAvatar(String base64Image){//@RequestParam("base64Image")
+
+        //获取当前的userID
+        Integer userID=getUserID();
+        String newImageUrl="";
+
+
+        try {
+            newImageUrl=avatarService.uploadAvatar(userID,base64Image,true);
+        }
+        catch (Exception e){
+            newImageUrl="";
+        }
+
+        if(newImageUrl=="")
+            return RetResponse.makeErrRsp("http://212.64.78.189:8601/images/default.jpg");
+        return RetResponse.makeOKRsp(newImageUrl);
     }
 }
