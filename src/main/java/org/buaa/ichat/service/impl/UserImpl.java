@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class UserImpl implements UserService {
@@ -41,8 +42,36 @@ public class UserImpl implements UserService {
     public User getInfo(Integer userID) throws Exception {
         User con = User.QueryBuild().UserID(userID).build();
         User ans =  userMapper.queryUserLimit1(con);
+
         if (ans == null)
             throw new Exception("不存在的用户");
         return ans;
     }
+
+    @Override
+    public void update(String ID,String info, String username, String password, String avatar, Integer sex, Integer age) throws Exception {
+        User.UpdateBuilder updateBuilder = User.UpdateBuild();
+        updateBuilder
+                .set(
+                    User.Build()
+                        .username(username)
+                        .password(password)
+                        .info(info)
+                        .age(age)
+                        .avatar(avatar)
+                        .sex(sex)
+                            .build())
+                .where(User.ConditionBuild().UserIDList(new Integer(ID)).build());
+        userMapper.update(updateBuilder.build());
+    }
+
+    @Override
+    public List<User> searchByName(String userName) throws Exception {
+        if (userName==null || userName.equals(""))
+            throw new Exception("用户名不可为空");
+        return userMapper.queryUser(User.QueryBuild().fuzzyUsername(userName).build());
+    }
+
+
+
 }

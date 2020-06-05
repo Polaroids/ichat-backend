@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.buaa.ichat.mapper.base.FriendBaseMapper">
+
+
+    <insert id="insertFriend" >
+        INSERT INTO `Friend`
+        (
+        <trim suffixOverrides=",">
+                    <if test="F_ID!=null">
+                        `F_ID`,
+                    </if>
+                    <if test="userID!=null">
+                        `userID`,
+                    </if>
+                    <if test="friendID!=null">
+                        `friendID`,
+                    </if>
+                    <if test="time!=null">
+                        `time`,
+                    </if>
+                    <if test="name!=null">
+                        `name`,
+                    </if>
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffixOverrides=",">
+                <if test="F_ID!=null">
+                    #{F_ID},
+                </if>
+                <if test="userID!=null">
+                    #{userID},
+                </if>
+                <if test="friendID!=null">
+                    #{friendID},
+                </if>
+                <if test="time!=null">
+                    #{time},
+                </if>
+                <if test="name!=null">
+                    #{name},
+                </if>
+        </trim>
+        )
+    </insert>
+
+
+
+
+    <update id="updateFriend">
+        UPDATE `Friend`
+        SET
+        <trim suffixOverrides=",">
+            <if test="userID != null">
+                `userID` = #{userID},
+            </if>
+            <if test="friendID != null">
+                `friendID` = #{friendID},
+            </if>
+            <if test="time != null and time!=''">
+                `time` = #{time},
+            </if>
+            <if test="name != null and name!=''">
+                `name` = #{name},
+            </if>
+        </trim>
+        WHERE
+        <trim suffixOverrides="and">
+                `F_ID` = #{F_ID} and
+        </trim>
+    </update>
+
+    <update id="update">
+        UPDATE `Friend`
+        SET
+        <trim suffixOverrides=",">
+        <if test="set.userID != null">
+            `userID` = #{set.userID},
+        </if>
+        <if test="set.friendID != null">
+            `friendID` = #{set.friendID},
+        </if>
+        <if test="set.time != null and set.time!=''">
+            `time` = #{set.time},
+        </if>
+        <if test="set.name != null and set.name!=''">
+            `name` = #{set.name},
+        </if>
+        </trim>
+        <trim prefix="where" suffixOverrides="and | or">
+                <if test="where.F_IDList != null">
+                    `F_ID` in
+                    <foreach collection="where.F_IDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.F_IDSt !=null">
+                `F_ID` >= #{where.F_IDSt} and
+            </if>
+            <if test="where.F_IDEd!=null">
+                `F_ID` &lt;= #{where.F_IDEd} and
+            </if>
+                <if test="where.userIDList != null">
+                    `userID` in
+                    <foreach collection="where.userIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.userIDSt !=null">
+                `userID` >= #{where.userIDSt} and
+            </if>
+            <if test="where.userIDEd!=null">
+                `userID` &lt;= #{where.userIDEd} and
+            </if>
+                <if test="where.friendIDList != null">
+                    `friendID` in
+                    <foreach collection="where.friendIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.friendIDSt !=null">
+                `friendID` >= #{where.friendIDSt} and
+            </if>
+            <if test="where.friendIDEd!=null">
+                `friendID` &lt;= #{where.friendIDEd} and
+            </if>
+                <if test="where.timeList != null">
+                    `time` in
+                    <foreach collection="where.timeList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test ="where.fuzzyTime!=null and where.fuzzyTime.size()>0">
+                (
+                <foreach collection="where.fuzzyTime"  separator="or" item="item">
+                    `Time` like concat('%',#{item},'%')
+                </foreach>
+                ) and
+            </if>
+            <if test ="where.rightFuzzyTime!=null and where.rightFuzzyTime.size()>0">
+                (
+                <foreach collection="where.rightFuzzyTime"  separator="or" item="item">
+                    `Time` like concat(#{item},'%')
+                </foreach>
+                ) and
+            </if>
+                <if test="where.nameList != null">
+                    `name` in
+                    <foreach collection="where.nameList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test ="where.fuzzyName!=null and where.fuzzyName.size()>0">
+                (
+                <foreach collection="where.fuzzyName"  separator="or" item="item">
+                    `Name` like concat('%',#{item},'%')
+                </foreach>
+                ) and
+            </if>
+            <if test ="where.rightFuzzyName!=null and where.rightFuzzyName.size()>0">
+                (
+                <foreach collection="where.rightFuzzyName"  separator="or" item="item">
+                    `Name` like concat(#{item},'%')
+                </foreach>
+                ) and
+            </if>
+        </trim>
+    </update>
+
+
+    <resultMap type="org.buaa.ichat.entity.Friend" id="FriendMap">
+        <result property="F_ID" column="F_ID"/>
+        <result property="userID" column="userID"/>
+        <result property="friendID" column="friendID"/>
+        <result property="time" column="time"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
+
+    <select id="queryFriend" resultMap="FriendMap">
+        select
+        <include refid="baseResult"></include>
+        from  `Friend`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="F_ID != null">
+                `F_ID` = #{F_ID} and
+            </if>
+            <if test="userID != null">
+                `userID` = #{userID} and
+            </if>
+            <if test="friendID != null">
+                `friendID` = #{friendID} and
+            </if>
+            <if test="time != null and time!=''">
+                `time` = #{time} and
+            </if>
+            <if test="name != null and name!=''">
+                `name` = #{name} and
+            </if>
+            <if test = "(_parameter instanceof org.buaa.ichat.entity.Friend$QueryBuilder) == true">
+                <if test="F_IDList != null">
+                    `F_ID` in
+                    <foreach collection="F_IDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="F_IDSt !=null">
+                    `F_ID` >= #{F_IDSt} and
+                </if>
+                <if test="F_IDEd!=null">
+                    `F_ID` &lt;= #{F_IDEd} and
+                </if>
+                <if test="userIDList != null">
+                    `userID` in
+                    <foreach collection="userIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="userIDSt !=null">
+                    `userID` >= #{userIDSt} and
+                </if>
+                <if test="userIDEd!=null">
+                    `userID` &lt;= #{userIDEd} and
+                </if>
+                <if test="friendIDList != null">
+                    `friendID` in
+                    <foreach collection="friendIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="friendIDSt !=null">
+                    `friendID` >= #{friendIDSt} and
+                </if>
+                <if test="friendIDEd!=null">
+                    `friendID` &lt;= #{friendIDEd} and
+                </if>
+                <if test="timeList != null">
+                    `time` in
+                    <foreach collection="timeList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test ="fuzzyTime!=null and fuzzyTime.size()>0">
+                    (
+                    <foreach collection="fuzzyTime"  separator="or" item="item">
+                        `Time` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyTime!=null and rightFuzzyTime.size()>0">
+                    (
+                    <foreach collection="rightFuzzyTime"  separator="or" item="item">
+                        `Time` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test="nameList != null">
+                    `name` in
+                    <foreach collection="nameList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test ="fuzzyName!=null and fuzzyName.size()>0">
+                    (
+                    <foreach collection="fuzzyName"  separator="or" item="item">
+                        `Name` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyName!=null and rightFuzzyName.size()>0">
+                    (
+                    <foreach collection="rightFuzzyName"  separator="or" item="item">
+                        `Name` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+            </if>
+        </trim>
+    </select>
+
+    <select id="queryFriendLimit1" resultMap="FriendMap">
+        select
+        <include refid="baseResult"></include>
+        from  `Friend`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="F_ID != null">
+                `F_ID` = #{F_ID} and
+            </if>
+            <if test="userID != null">
+                `userID` = #{userID} and
+            </if>
+            <if test="friendID != null">
+                `friendID` = #{friendID} and
+            </if>
+            <if test="time != null and time!=''">
+                `time` = #{time} and
+            </if>
+            <if test="name != null and name!=''">
+                `name` = #{name} and
+            </if>
+            <if test = "(_parameter instanceof org.buaa.ichat.entity.Friend$QueryBuilder) == true">
+                    <if test="F_IDList != null">
+                        `F_ID` in
+                        <foreach collection="F_IDList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="F_IDSt !=null">
+                    `F_ID` >= #{F_IDSt} and
+                </if>
+                <if test="F_IDEd!=null">
+                    `F_ID` &lt;= #{F_IDEd} and
+                </if>
+                    <if test="userIDList != null">
+                        `userID` in
+                        <foreach collection="userIDList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="userIDSt !=null">
+                    `userID` >= #{userIDSt} and
+                </if>
+                <if test="userIDEd!=null">
+                    `userID` &lt;= #{userIDEd} and
+                </if>
+                    <if test="friendIDList != null">
+                        `friendID` in
+                        <foreach collection="friendIDList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="friendIDSt !=null">
+                    `friendID` >= #{friendIDSt} and
+                </if>
+                <if test="friendIDEd!=null">
+                    `friendID` &lt;= #{friendIDEd} and
+                </if>
+                    <if test="timeList != null">
+                        `time` in
+                        <foreach collection="timeList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test ="fuzzyTime!=null and fuzzyTime.size()>0">
+                    (
+                    <foreach collection="fuzzyTime"  separator="or" item="item">
+                        `Time` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyTime!=null and rightFuzzyTime.size()>0">
+                    (
+                    <foreach collection="rightFuzzyTime"  separator="or" item="item">
+                        `Time` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                    <if test="nameList != null">
+                        `name` in
+                        <foreach collection="nameList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test ="fuzzyName!=null and fuzzyName.size()>0">
+                    (
+                    <foreach collection="fuzzyName"  separator="or" item="item">
+                        `Name` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyName!=null and rightFuzzyName.size()>0">
+                    (
+                    <foreach collection="rightFuzzyName"  separator="or" item="item">
+                        `Name` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+            </if>
+        </trim>
+        limit 1
+    </select>
+
+    <sql id="allResult">
+        <trim suffixOverrides=",">
+        `F_ID`,
+        `userID`,
+        `friendID`,
+        `time`,
+        `name`,
+        </trim>
+    </sql>
+
+
+
+    <sql id="baseResult">
+        <trim suffixOverrides=",">
+            <if test = "(_parameter instanceof org.buaa.ichat.entity.Friend$QueryBuilder) == true">
+
+                <if test="fetchFields==null">
+                    <include refid="allResult"></include>
+                </if>
+                <if test="fetchFields!=null">
+                    <if test="fetchFields.AllFields !=null">
+                        <include refid="allResult"></include>
+                    </if>
+                    <if test="fetchFields.AllFields ==null and fetchFields.fetchFields==null and fetchFields.excludeFields==null and fetchFields.otherFields==null">
+                        <include refid="allResult"></include>
+                    </if>
+                    <if test="fetchFields.AllFields==null and fetchFields.fetchFields!=null">
+                    <if test="fetchFields.fetchFields.F_ID==true">
+                        `F_ID`,
+                    </if>
+                    <if test="fetchFields.fetchFields.userID==true">
+                        `userID`,
+                    </if>
+                    <if test="fetchFields.fetchFields.friendID==true">
+                        `friendID`,
+                    </if>
+                    <if test="fetchFields.fetchFields.time==true">
+                        `time`,
+                    </if>
+                    <if test="fetchFields.fetchFields.name==true">
+                        `name`,
+                    </if>
+                    </if>
+                    <if test="fetchFields.AllFields==null and fetchFields.excludeFields!=null">
+                    <if test="fetchFields.excludeFields.F_ID==null">
+                        `F_ID`,
+                    </if>
+                    <if test="fetchFields.excludeFields.userID==null">
+                        `userID`,
+                    </if>
+                    <if test="fetchFields.excludeFields.friendID==null">
+                        `friendID`,
+                    </if>
+                    <if test="fetchFields.excludeFields.time==null">
+                        `time`,
+                    </if>
+                    <if test="fetchFields.excludeFields.name==null">
+                        `name`,
+                    </if>
+                    </if>
+                    <if test="fetchFields.otherFields!=null and fetchFields.otherFields.size>0">
+                        <foreach collection="fetchFields.otherFields" index="index" item="item" separator=",">
+                        `#{item}`
+                        </foreach>
+                    </if>
+                </if>
+            </if>
+            <if test="(_parameter instanceof org.buaa.ichat.entity.Friend$QueryBuilder) == false" >
+                <include refid="allResult"></include>
+            </if>
+
+        </trim>
+    </sql>
+
+
+</mapper>

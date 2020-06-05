@@ -120,13 +120,13 @@
         <if test="set.age != null">
             `age` = #{set.age},
         </if>
-        <if test="set.info != null and set.info!=''">
+        <if test="set.info != null">
             `info` = #{set.info},
         </if>
         <if test="set.sex != null">
             `sex` = #{set.sex},
         </if>
-        <if test="set.avatar != null and set.avatar!=''">
+        <if test="set.avatar != null">
             `avatar` = #{set.avatar},
         </if>
         <if test="set.createTime != null and set.createTime!=''">

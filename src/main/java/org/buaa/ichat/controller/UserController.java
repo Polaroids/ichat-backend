@@ -4,6 +4,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
 import org.buaa.ichat.service.UserService;
+import org.buaa.ichat.service.AvatarService;
 import org.buaa.ichat.tool.RetResponse;
 import org.buaa.ichat.tool.RetResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private AvatarService avatarService;
+
     //@Value("${serviceUrl}")
     //String url;
     @PostMapping({"login"})
@@ -64,8 +68,7 @@ public class UserController {
 
     @GetMapping(value = "/info")
     public RetResult<Object> person(Integer ID){
-        Subject subject = SecurityUtils.getSubject();
-        Integer userID = new Integer ((String)subject.getPrincipal());
+        Integer userID = getUserID();
         try {
             if (ID != null)
                 userID = ID;
@@ -75,5 +78,50 @@ public class UserController {
             return RetResponse.makeErrRsp(e.getMessage());
         }
     }
+    @PostMapping({"update"})
+    public RetResult<Object> update(String info, String username, String password, String avatar, Integer sex,Integer age){
 
+        try {
+            userService.update(getUserID().toString(),info,username,password,avatar,sex,age);
+            return RetResponse.makeOKRsp();
+        }
+        catch (Exception e){
+            return RetResponse.makeErrRsp(e.getMessage());
+        }
+    }
+    public Integer getUserID(){
+        Subject subject = SecurityUtils.getSubject();
+        return new Integer ((String)subject.getPrincipal());
+    }
+    @PostMapping({"searchUsers"})
+    public RetResult<Object> search(String userName,Integer userID){
+        try {
+            if (userID != null)
+                return RetResponse.makeOKRsp(userService.getInfo(userID));
+            return RetResponse.makeOKRsp(userService.searchByName(userName));
+        }
+        catch (Exception e){
+            return RetResponse.makeErrRsp(e.getMessage());
+        }
+    }
+
+    @PostMapping("uploadavatar")
+    public RetResult<Object> UploadUserAvatar(String base64Image){//@RequestParam("base64Image")
+
+        //获取当前的userID
+        Integer userID=getUserID();
+        String newImageUrl="";
+
+
+        try {
+            newImageUrl=avatarService.uploadAvatar(userID,base64Image,true);
+        }
+        catch (Exception e){
+            newImageUrl="";
+        }
+
+        if(newImageUrl=="")
+            return RetResponse.makeErrRsp("http://212.64.78.189:8601/images/default.jpg");
+        return RetResponse.makeOKRsp(newImageUrl);
+    }
 }
