@@ -32,9 +32,8 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/api/user/register", "anon");
         filterChainDefinitionMap.put("/api/group/test", "anon");
 
-        // 不屏蔽视频页面及其静态资源，会产生问题。
-        // 最后应该不需要使用这个，暂时先放着
-        filterChainDefinitionMap.put("/video.html", "anon");
+        // 不拦截static文件夹的静态资源。最后应该不需要使用这个，暂时先放着
+        filterChainDefinitionMap.put("/index.html", "anon");
         filterChainDefinitionMap.put("/css/**", "anon");
         filterChainDefinitionMap.put("/img/**", "anon");
         filterChainDefinitionMap.put("/js/**", "anon");

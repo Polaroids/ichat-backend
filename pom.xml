@@ -67,16 +67,11 @@
 
 		<!-- Websocket -->
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-websocket</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
 
 		<!-- Kurento -->
-		<dependency>
-			<groupId>org.kurento.tutorial</groupId>
-			<artifactId>kurento-one2one-call</artifactId>
-			<version>6.11.0</version>
-		</dependency>
 		<dependency>
 			<groupId>org.kurento</groupId>
 			<artifactId>kurento-client</artifactId>
@@ -86,44 +81,6 @@
 			<groupId>org.kurento</groupId>
 			<artifactId>kurento-utils-js</artifactId>
 			<version>6.13.1</version>
-		</dependency>
-
-		<!-- WebJars -->
-		<!-- 视频通话前端管理静态资源用的，后面再看要不要分离删掉 -->
-		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>webjars-locator</artifactId>
-			<version>0.36</version>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars.bower</groupId>
-			<artifactId>jquery</artifactId>
-			<version>3.5.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars.bower</groupId>
-			<artifactId>bootstrap</artifactId>
-			<version>3.3.6</version>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars.bower</groupId>
-			<artifactId>demo-console</artifactId>
-			<version>1.5.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>draggabilly</artifactId>
-			<version>2.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars.bower</groupId>
-			<artifactId>ekko-lightbox</artifactId>
-			<version>4.0.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.webjars.bower</groupId>
-			<artifactId>webrtc-adapter</artifactId>
-			<version>6.4.0</version>
 		</dependency>
 
 		<!-- 热部署 -->

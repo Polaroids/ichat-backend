@@ -5,19 +5,18 @@ import org.kurento.client.IceCandidate;
 import org.kurento.client.WebRtcEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 
+import javax.websocket.Session;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UserSession {
 
-  private static final Logger log = LoggerFactory.getLogger(UserSession.class);
+  private static final Logger logger = LoggerFactory.getLogger(UserSession.class);
 
-  private final String name;
-  private final WebSocketSession session;
+  private final String userID;
+  private final Session session;
 
   private String sdpOffer;
   private String callingTo;
@@ -27,17 +26,19 @@ public class UserSession {
   // 集成自己了IP地址信息本地IP地址、公网IP地址、Relay服务端分配的地址等
   private final List<IceCandidate> candidateList = new ArrayList<IceCandidate>();
 
-  public UserSession(WebSocketSession session, String name) {
+  private int state = 0;
+
+  public UserSession(Session session, String userID) {
     this.session = session;
-    this.name = name;
+    this.userID = userID;
   }
 
-  public WebSocketSession getSession() {
+  public Session getSession() {
     return session;
   }
 
-  public String getName() {
-    return name;
+  public String getuserID() {
+    return userID;
   }
 
   public String getSdpOffer() {
@@ -65,8 +66,8 @@ public class UserSession {
   }
 
   public void sendMessage(JsonObject message) throws IOException {
-    log.debug("Sending message from user '{}': {}", name, message);
-    session.sendMessage(new TextMessage(message.toString()));
+    logger.info("Sending message from user '{}': {}", userID, message);
+    session.getAsyncRemote().sendText(message.toString());
   }
 
   public String getSessionId() {
@@ -88,6 +89,18 @@ public class UserSession {
     } else {
       candidateList.add(candidate);
     }
+  }
+
+  public int getState() {
+    return state;
+  }
+
+  public void setStateFree() {
+    this.state = 0;
+  }
+
+  public void setStateCalling() {
+    this.state = 1;
   }
 
   public void clear() {

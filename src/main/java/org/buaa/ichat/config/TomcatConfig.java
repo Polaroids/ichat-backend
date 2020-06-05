@@ -26,7 +26,7 @@ public class TomcatConfig {
                 if (factory instanceof TomcatServletWebServerFactory) {
                     TomcatServletWebServerFactory webServerFactory = (TomcatServletWebServerFactory)factory;
                     Connector connector = new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
-                    // 设置http访问的端口号，不能与https端口重复，否则会报端口被占用的错误
+                    // 设置http访问的端口号
                     connector.setPort(httpPort);
                     webServerFactory.addAdditionalTomcatConnectors(connector);
                 }
