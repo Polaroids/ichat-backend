@@ -19,8 +19,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component
 @ServerEndpoint(value = "/videoCall")
+@Component
 public class VideoHandler {
 
     // ConcurrentHashMap: 相当于线程安全的HashMap.
@@ -63,7 +63,7 @@ public class VideoHandler {
     @OnError
     public void onError(Session session, Throwable error) {
         UserSession user = getUserSessionBySession(session);
-        if(user != null)
+        if (user != null)
             user.setStateFree();
         error.printStackTrace();
     }
@@ -127,7 +127,7 @@ public class VideoHandler {
         String calleeID = jsonMessage.get("calleeID").getAsString();
 
         JsonObject response = new JsonObject();
-        if(!exists(calleeID)) {
+        if (!exists(calleeID)) {
             response.addProperty("type", "callResponse");
             response.addProperty("callResponse", "notOnline");
             caller.sendMessage(response);
@@ -138,7 +138,7 @@ public class VideoHandler {
         UserSession callee = getUserSessionByUserID(calleeID);
 
         // 判断对方是不是正忙
-        if(callee.getState() == 1) {
+        if (callee.getState() == 1) {
             response.addProperty("type", "callResponse");
             response.addProperty("callResponse", "isBusy");
             caller.sendMessage(response);
@@ -250,7 +250,7 @@ public class VideoHandler {
 
         } catch (Throwable t) {
             logger.error(t.getMessage(), t);
-            if(pipeline != null) {
+            if (pipeline != null) {
                 pipeline.release();
             }
 
@@ -259,7 +259,7 @@ public class VideoHandler {
 
             JsonObject response = new JsonObject();
             response.addProperty("type", "callResponse");
-            response.addProperty("callResponse",  "exception");
+            response.addProperty("callResponse", "exception");
             caller.sendMessage(response);
         }
     }
@@ -267,20 +267,20 @@ public class VideoHandler {
     // 停止通话
     private void stop(Session session) throws IOException {
         String sessionId = session.getId();
-        if(pipelines.containsKey(sessionId)) {
+        if (pipelines.containsKey(sessionId)) {
             pipelines.get(sessionId).release();
             CallMediaPipeline pipeline = pipelines.remove(sessionId);
             pipeline.release();
 
             UserSession stopper = getUserSessionBySession(session);
-            if(stopper != null) {
+            if (stopper != null) {
                 stopper.setStateFree();
                 UserSession stoppee =
                         (stopper.getCallingFrom() != null) ? getUserSessionByUserID(stopper.
                                 getCallingFrom()) : stopper.getCallingTo() != null ? getUserSessionByUserID(stopper
                                 .getCallingTo()) : null;
 
-                if(stoppee != null) {
+                if (stoppee != null) {
                     stoppee.setStateFree();
                     JsonObject message = new JsonObject();
                     message.addProperty("type", "stopCommmunication");
@@ -334,7 +334,7 @@ public class VideoHandler {
 
     public void printOnlineUserID() {
         Iterator iter = usersByUserID.entrySet().iterator();
-        while(iter.hasNext()) {
+        while (iter.hasNext()) {
             Map.Entry entry = (Map.Entry) iter.next();
             Object key = entry.getKey();
             Object value = entry.getValue();
