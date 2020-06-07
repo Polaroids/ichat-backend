@@ -8,7 +8,6 @@ import org.kurento.client.IceCandidate;
 import org.kurento.client.IceCandidateFoundEvent;
 import org.kurento.client.KurentoClient;
 import org.kurento.jsonrpc.JsonUtils;
-import org.kurento.tutorial.one2onecall.CallMediaPipeline;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

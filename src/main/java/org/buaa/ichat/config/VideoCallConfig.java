@@ -3,11 +3,12 @@ package org.buaa.ichat.config;
 import org.buaa.ichat.video.VideoHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 @Configuration
+@Component
 public class VideoCallConfig {
 
-    @Bean
     public VideoHandler videoHandler() {
         return new VideoHandler();
     }

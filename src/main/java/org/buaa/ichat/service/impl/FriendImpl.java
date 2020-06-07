@@ -66,6 +66,8 @@ public class FriendImpl implements FriendService {
     public List<User> getFriends(Integer userID) {
         List<Friend> friends = friendMapper.queryFriend(Friend.QueryBuild().userID(userID));
         List<Integer> userIDList = new ArrayList<>();
+        if (friends.size() == 0)
+            return new ArrayList<>();
         for (Friend friend:friends){
             userIDList.add(friend.getFriendID());
         }
