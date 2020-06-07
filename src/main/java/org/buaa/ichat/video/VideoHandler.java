@@ -10,6 +10,7 @@ import org.kurento.client.KurentoClient;
 import org.kurento.jsonrpc.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
@@ -18,7 +19,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-// @Component
+@Component
 @ServerEndpoint(value = "/videoCall")
 public class VideoHandler {
 
