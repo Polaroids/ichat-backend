@@ -3,6 +3,7 @@ package org.buaa.ichat.video;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import org.buaa.ichat.entity.User;
 import org.buaa.ichat.service.UserService;
 import org.kurento.client.EventListener;
 import org.kurento.client.IceCandidate;
@@ -14,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
@@ -31,19 +33,35 @@ public class VideoHandler {
     // 这里则是 Session.id-UserSession
     private static ConcurrentHashMap<String, UserSession> usersBySessionId = new ConcurrentHashMap<>();
 
-
     private static final Logger logger = LoggerFactory.getLogger(VideoHandler.class);
     private static final Gson gson = new GsonBuilder().create(); // Gson: 把 Java 对象转换为 Json 表达式
+    // 判断 callee 是否接听
+    private boolean isResponse = false;
 
     private final ConcurrentHashMap<String, CallMediaPipeline> pipelines = new ConcurrentHashMap<>();
 
+    private static VideoHandler videoHandler;
     @Autowired
     private UserService userService;
 
-    private static KurentoClient kurento = KurentoClient.create();
+    @Autowired
+    private KurentoClient kurento;
 
-    // 判断 callee 是否接听
-    private boolean isResponse = false;
+    // 解决 @Autowired 为空指针的问题
+    @PostConstruct
+    private void init() {
+        videoHandler = this;
+        videoHandler.userService = this.userService;
+        videoHandler.kurento = this.kurento;
+    }
+
+    private UserService getUserService() {
+        return videoHandler.userService;
+    }
+
+    private KurentoClient getKurento() {
+        return videoHandler.kurento;
+    }
 
     /*
      * 连接成功建立时调用
@@ -82,10 +100,6 @@ public class VideoHandler {
      */
     @OnMessage
     public void onMessage(Session session, String message) throws Exception {
-//        if(userService == null)
-//            System.out.println("userService null");
-//        else
-//            System.out.println("userService not null");
         JsonObject jsonMessage = gson.fromJson(message, JsonObject.class);
         UserSession user = getUserSessionBySession(session);
         switch (jsonMessage.get("type").getAsString()) {
@@ -130,7 +144,7 @@ public class VideoHandler {
         String userID = jsonObject.get("userID").getAsString();
         UserSession user = new UserSession(session, userID);
         online(user);
-        logger.info("userID: " + userID + "is online.");
+        logger.info("userID: " + userID + " is online.");
     }
 
     // 检查用户是否在线，没有就返回对方不在线消息，有就向被呼叫用户发送消息
@@ -166,16 +180,15 @@ public class VideoHandler {
 
         response.addProperty("type", "incomingCall");
         response.addProperty("callerID", callerID);
-
-//        User user = null;
-//        // 发送对方的用户名、头像
-//        try {
-//            userService.getInfo(Integer.getInteger(calleeID));
-//        } catch (Exception e) {
-//
-//        }
-//        response.addProperty("username", user.getUsername());
-//        response.addProperty("avatar", user.getAvatar());
+        User user = null;
+        // 发送对方的用户名、头像
+        try {
+            user = getUserService().getInfo(new Integer(callerID));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        response.addProperty("username", user.getUsername());
+        response.addProperty("avatar", user.getAvatar());
 
         callee.sendMessage(response);
         callee.setCallingFrom(callerID);
@@ -194,7 +207,7 @@ public class VideoHandler {
             public void run() {
                 System.out.println("waiting " + callee.getuserID() + " response...");
                 try {
-                    Thread.sleep(150000);
+                    Thread.sleep(15000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -203,6 +216,8 @@ public class VideoHandler {
                     // 向 callee 发消息告知不用等了
                     JsonObject messageForCallee = new JsonObject();
                     messageForCallee.addProperty("type", "incomingCallNotResponse");
+                    // 需要取消 callee 的忙线状态
+                    callee.setStateFree();
                     // 告知 caller 对方长时间没接听
                     JsonObject messageForCaller = new JsonObject();
                     messageForCaller.addProperty("type", "callResponse");
@@ -244,7 +259,7 @@ public class VideoHandler {
         // 创建一个 CallMediaPipeline对象，以封装媒体管道的创建和管理。然后，该对象用于与用户的浏览器协商媒体交换。
         CallMediaPipeline pipeline = null;
         try {
-            pipeline = new CallMediaPipeline(kurento);
+            pipeline = new CallMediaPipeline(getKurento());
             pipelines.put(caller.getSessionId(), pipeline);
             pipelines.put(callee.getSessionId(), pipeline);
             callee.setWebRtcEndpoint(pipeline.getCalleeWebRtcEp());
