@@ -3,6 +3,7 @@ package org.buaa.ichat.video;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import org.buaa.ichat.service.UserService;
 import org.kurento.client.EventListener;
 import org.kurento.client.IceCandidate;
 import org.kurento.client.IceCandidateFoundEvent;
@@ -10,6 +11,7 @@ import org.kurento.client.KurentoClient;
 import org.kurento.jsonrpc.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -35,8 +37,13 @@ public class VideoHandler {
 
     private final ConcurrentHashMap<String, CallMediaPipeline> pipelines = new ConcurrentHashMap<>();
 
-    // @Autowired
+    @Autowired
+    private UserService userService;
+
     private static KurentoClient kurento = KurentoClient.create();
+
+    // 判断 callee 是否接听
+    private boolean isResponse = false;
 
     /*
      * 连接成功建立时调用
@@ -52,7 +59,7 @@ public class VideoHandler {
      */
     @OnClose
     public void onClose(Session session) throws Exception {
-        stop(session);
+        stop(session, "websocket closed");
         removeBySession(session);
     }
 
@@ -61,10 +68,11 @@ public class VideoHandler {
      * 修改用户状态
      */
     @OnError
-    public void onError(Session session, Throwable error) {
+    public void onError(Session session, Throwable error) throws Exception {
         UserSession user = getUserSessionBySession(session);
         if (user != null)
             user.setStateFree();
+        stop(session, error.getMessage());
         error.printStackTrace();
     }
 
@@ -74,6 +82,10 @@ public class VideoHandler {
      */
     @OnMessage
     public void onMessage(Session session, String message) throws Exception {
+//        if(userService == null)
+//            System.out.println("userService null");
+//        else
+//            System.out.println("userService not null");
         JsonObject jsonMessage = gson.fromJson(message, JsonObject.class);
         UserSession user = getUserSessionBySession(session);
         switch (jsonMessage.get("type").getAsString()) {
@@ -104,8 +116,8 @@ public class VideoHandler {
                 }
                 break;
             }
-            case "stop":
-                stop(session);
+            case "stop": // 正常退出
+                stop(session, "normal");
                 break;
             default:
                 break;
@@ -155,9 +167,55 @@ public class VideoHandler {
         response.addProperty("type", "incomingCall");
         response.addProperty("callerID", callerID);
 
+//        User user = null;
+//        // 发送对方的用户名、头像
+//        try {
+//            userService.getInfo(Integer.getInteger(calleeID));
+//        } catch (Exception e) {
+//
+//        }
+//        response.addProperty("username", user.getUsername());
+//        response.addProperty("avatar", user.getAvatar());
+
         callee.sendMessage(response);
         callee.setCallingFrom(callerID);
         logger.info("videoCall: " + callerID + " call to " + calleeID + ": send incomingCall to " + calleeID);
+
+        // 设置 callee 未接听状态
+        callee.setResponse(false);
+        // 发起倒计时
+        ifNotResponse(callee, caller);
+    }
+
+    // 15s 未应答就分别向 caller 和 callee 发送消息
+    private void ifNotResponse(UserSession callee, UserSession caller) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("waiting " + callee.getuserID() + " response...");
+                try {
+                    Thread.sleep(150000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if(!callee.isResponse()) {
+                    logger.info(callee.getuserID() + "not response.");
+                    // 向 callee 发消息告知不用等了
+                    JsonObject messageForCallee = new JsonObject();
+                    messageForCallee.addProperty("type", "incomingCallNotResponse");
+                    // 告知 caller 对方长时间没接听
+                    JsonObject messageForCaller = new JsonObject();
+                    messageForCaller.addProperty("type", "callResponse");
+                    messageForCaller.addProperty("callResponse", "NotResponse");
+                    try {
+                        callee.sendMessage(messageForCallee);
+                        caller.sendMessage(messageForCaller);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
     }
 
     // 被呼叫者向服务器返回应答信息
@@ -166,6 +224,9 @@ public class VideoHandler {
         String callerID = jsonMessage.get("callerID").getAsString();
         UserSession caller = getUserSessionByUserID(callerID);
         String calleeID = caller.getCallingTo();
+
+        // 设置 callee 接听状态
+        callee.setResponse(true);
 
         // 被呼叫者拒绝通话
         if (!"accepted".equals(callResponse)) {
@@ -265,7 +326,7 @@ public class VideoHandler {
     }
 
     // 停止通话
-    private void stop(Session session) throws IOException {
+    private void stop(Session session, String reason) throws IOException {
         String sessionId = session.getId();
         if (pipelines.containsKey(sessionId)) {
             pipelines.get(sessionId).release();
@@ -284,6 +345,7 @@ public class VideoHandler {
                     stoppee.setStateFree();
                     JsonObject message = new JsonObject();
                     message.addProperty("type", "stopCommmunication");
+                    message.addProperty("reason", reason);
                     stoppee.sendMessage(message);
                     stoppee.clear();
                 }
@@ -294,7 +356,7 @@ public class VideoHandler {
 
     // 消息处理异常时调用，关闭会话并向对方返回错误消息
     private void ErrorResponse(Throwable throwable, Session session, String responseId) throws IOException {
-        stop(session);
+        stop(session, throwable.getMessage());
         logger.error(throwable.getMessage(), throwable);
         JsonObject response = new JsonObject();
         response.addProperty("type", responseId);

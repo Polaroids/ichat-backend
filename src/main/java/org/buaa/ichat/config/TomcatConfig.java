@@ -16,7 +16,6 @@ public class TomcatConfig {
 
     @Value("${http.port}")
     private int httpPort;
-
     @Bean
     public WebServerFactoryCustomizer<ConfigurableWebServerFactory> webServerFactoryCustomizer() {
         return new WebServerFactoryCustomizer<ConfigurableWebServerFactory>() {

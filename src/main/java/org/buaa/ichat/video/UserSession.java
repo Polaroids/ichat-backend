@@ -26,7 +26,11 @@ public class UserSession {
   // 集成自己了IP地址信息本地IP地址、公网IP地址、Relay服务端分配的地址等
   private final List<IceCandidate> candidateList = new ArrayList<IceCandidate>();
 
+  // 保存用户的通话状态，正在通话则为1
   private int state = 0;
+
+  // 判断有没有接听通话
+  private boolean isResponse;
 
   public UserSession(Session session, String userID) {
     this.session = session;
@@ -101,6 +105,14 @@ public class UserSession {
 
   public void setStateCalling() {
     this.state = 1;
+  }
+
+  public boolean isResponse() {
+    return isResponse;
+  }
+
+  public void setResponse(boolean response) {
+    isResponse = response;
   }
 
   public void clear() {
