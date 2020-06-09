@@ -65,10 +65,10 @@ public class VideoHandler {
 
     /*
      * 连接成功建立时调用
-     * 不用执行
      */
     @OnOpen
     public void onOpen(Session session) {
+        logger.info(session.getId() + " is connecting");
     }
 
     /*
@@ -77,6 +77,7 @@ public class VideoHandler {
      */
     @OnClose
     public void onClose(Session session) throws Exception {
+        logger.info(session.getId() + " closed.");
         stop(session, "websocket closed");
         removeBySession(session);
     }
@@ -103,6 +104,11 @@ public class VideoHandler {
         JsonObject jsonMessage = gson.fromJson(message, JsonObject.class);
         UserSession user = getUserSessionBySession(session);
         switch (jsonMessage.get("type").getAsString()) {
+            case "ping": // 心跳连接用
+                JsonObject pongMessage = new JsonObject();
+                pongMessage.addProperty("type", "pong");
+                session.getAsyncRemote().sendText(pongMessage.toString());
+                break;
             case "login":
                 try {
                     login(session, jsonMessage);
@@ -136,7 +142,8 @@ public class VideoHandler {
             default:
                 break;
         }
-
+        logger.info("在线用户：");
+        printOnlineUserID();
     }
 
     // 用户上线，加入在线列表
