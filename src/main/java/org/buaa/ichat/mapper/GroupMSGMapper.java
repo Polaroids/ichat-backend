@@ -8,6 +8,6 @@ import org.buaa.ichat.mapper.base.GroupMSGBaseMapper;
 *  @author 
 */
 public interface GroupMSGMapper extends GroupMSGBaseMapper{
-
+    public List<GroupMSG> getGroupMsgByID(Integer groupID)throws Exception;
 
 }

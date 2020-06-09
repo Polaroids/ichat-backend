@@ -40,7 +40,7 @@ public class GroupController {
         }
     }
     @PostMapping({"invite"})
-    public RetResult<Object> invite(Integer ID,Integer groupID){
+    public RetResult<Object> invite(Integer groupID,Integer[] ID){
         if (ID == null || groupID == null)
             return RetResponse.makeErrRsp("参数不可为空");
         try {

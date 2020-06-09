@@ -2,6 +2,7 @@ package org.buaa.ichat.controller;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.buaa.ichat.service.UserService;
 import org.buaa.ichat.service.AvatarService;
@@ -30,6 +31,8 @@ public class UserController {
             return RetResponse.makeErrRsp("用户名或密码不可为空");
         // 从SecurityUtils里边创建一个 subject
         Subject subject = SecurityUtils.getSubject();
+        Session session =  subject.getSession();
+        session.setTimeout(1000 * 60 *60); //session 1小时过期
         // 在认证提交前准备 token（令牌）
         UsernamePasswordToken token = new UsernamePasswordToken(userID, password);
         // 执行认证登陆

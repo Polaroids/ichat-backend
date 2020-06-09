@@ -64,12 +64,18 @@ public class GroupImpl implements GroupService {
     }
 
     @Override
-    public void invite(Integer userID, Integer groupID, Integer friendID)throws Exception {
-        if (!friendService.isFriend(userID,friendID))
-            throw new Exception("不可邀请非好友");
+    public void invite(Integer userID, Integer groupID, Integer[] friendIDs)throws Exception {
+        String time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        for (Integer friendID:friendIDs) {
+            System.out.println(friendID);
+            System.out.println(groupID);
+            if (!friendService.isFriend(userID, friendID))
+                throw new Exception("不可邀请非好友");
 //        if (!isManager(userID,groupID))
 //            throw new Exception("只有管理员可以邀请好友入群");
-        membersMapper.insertMembers(Members.Build().groupID(groupID).inviterID(userID).memberID(friendID).build());
+
+            membersMapper.insertMembers(Members.Build().time(time).groupID(groupID).inviterID(userID).memberID(friendID).build());
+        }
     }
 
     @Override
