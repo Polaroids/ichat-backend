@@ -103,7 +103,6 @@ public class VideoHandler {
     public void onMessage(Session session, String message) throws Exception {
         JsonObject jsonMessage = gson.fromJson(message, JsonObject.class);
         UserSession user = getUserSessionBySession(session);
-        logger.info(message);
         switch (jsonMessage.get("type").getAsString()) {
             case "ping": // 心跳连接用
                 JsonObject pongMessage = new JsonObject();
@@ -111,6 +110,7 @@ public class VideoHandler {
                 session.getAsyncRemote().sendText(pongMessage.toString());
                 break;
             case "login":
+                logger.info("receive message: " + message);
                 try {
                     login(session, jsonMessage);
                 } catch (Throwable t) {
@@ -118,6 +118,7 @@ public class VideoHandler {
                 }
                 break;
             case "call":
+                logger.info("receive message: " + message);
                 try {
                     call(user, jsonMessage);
                 } catch (Throwable t) {
@@ -125,6 +126,7 @@ public class VideoHandler {
                 }
                 break;
             case "incomingCallResponse":
+                logger.info("receive message: " + message);
                 incomingCallResponse(user, jsonMessage);
                 break;
             case "onIceCandidate": {
@@ -138,13 +140,12 @@ public class VideoHandler {
                 break;
             }
             case "stop": // 正常退出
+                logger.info("receive message: " + message);
                 stop(session, "normal");
                 break;
             default:
                 break;
         }
-        logger.info("在线用户：");
-        printOnlineUserID();
     }
 
     // 用户上线，加入在线列表
@@ -172,7 +173,7 @@ public class VideoHandler {
         UserSession callee = getUserSessionByUserID(calleeID);
 
         // 判断对方是不是正忙
-        if (callee.getState() == 1) {
+        if (callee.isBusy()) {
             response.addProperty("type", "callResponse");
             response.addProperty("callResponse", "isBusy");
             caller.sendMessage(response);
@@ -181,7 +182,7 @@ public class VideoHandler {
         }
 
         // 设置呼叫者正忙状态
-        caller.setStateCalling();
+        caller.setStateBusy();
 
         caller.setSdpOffer(jsonMessage.getAsJsonPrimitive("sdpOffer").getAsString());
         caller.setCallingTo(calleeID);
@@ -200,7 +201,7 @@ public class VideoHandler {
 
         callee.sendMessage(response);
         callee.setCallingFrom(callerID);
-        logger.info("videoCall: " + callerID + " call to " + calleeID + ": send incomingCall to " + calleeID);
+        logger.info("videoCall: " + callerID + " call to " + calleeID);
 
         // 设置 callee 未接听状态
         callee.setResponse(false);
@@ -213,7 +214,7 @@ public class VideoHandler {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                System.out.println("waiting " + callee.getuserID() + " response...");
+                logger.info("waiting " + callee.getuserID() + " response...");
                 try {
                     Thread.sleep(15000);
                 } catch (InterruptedException e) {
@@ -314,8 +315,9 @@ public class VideoHandler {
             synchronized (callee) {
                 callee.sendMessage(startCommunication);
             }
-            // 设置被呼叫者正忙
+            // 设置双方状态：calling
             callee.setStateCalling();
+            caller.setStateCalling();
 
             pipeline.getCalleeWebRtcEp().gatherCandidates();
 
@@ -345,6 +347,9 @@ public class VideoHandler {
             response.addProperty("type", "callResponse");
             response.addProperty("callResponse", "exception");
             caller.sendMessage(response);
+
+            caller.setStateFree();
+            callee.setStateFree();
         }
     }
 
@@ -355,25 +360,29 @@ public class VideoHandler {
             pipelines.get(sessionId).release();
             CallMediaPipeline pipeline = pipelines.remove(sessionId);
             pipeline.release();
-
-            UserSession stopper = getUserSessionBySession(session);
-            if (stopper != null) {
-                stopper.setStateFree();
-                UserSession stoppee =
-                        (stopper.getCallingFrom() != null) ? getUserSessionByUserID(stopper.
-                                getCallingFrom()) : stopper.getCallingTo() != null ? getUserSessionByUserID(stopper
-                                .getCallingTo()) : null;
-
-                if (stoppee != null) {
-                    stoppee.setStateFree();
-                    JsonObject message = new JsonObject();
-                    message.addProperty("type", "stopCommunication");
-                    message.addProperty("reason", reason);
-                    stoppee.sendMessage(message);
-                    stoppee.clear();
-                }
-                stopper.clear();
+        }
+        UserSession stopper = getUserSessionBySession(session);
+        if (stopper == null) {
+            logger.info("stop nothing.");
+            return;
+        }
+        if (stopper.isCalling()) {
+            stopper.setStateFree();
+            UserSession stoppee =
+                    (stopper.getCallingFrom() != null) ? getUserSessionByUserID(stopper.
+                            getCallingFrom()) : stopper.getCallingTo() != null ? getUserSessionByUserID(stopper
+                            .getCallingTo()) : null;
+            logger.info(stopper.getuserID() + " stop.");
+            if (stoppee != null) {
+                stoppee.setStateFree();
+                JsonObject message = new JsonObject();
+                message.addProperty("type", "stopCommunication");
+                message.addProperty("reason", reason);
+                stoppee.sendMessage(message);
+                stoppee.clear();
+                logger.info(stoppee.getuserID() + " stop.");
             }
+            stopper.clear();
         }
     }
 

@@ -26,7 +26,7 @@ public class UserSession {
   // 集成自己了IP地址信息本地IP地址、公网IP地址、Relay服务端分配的地址等
   private final List<IceCandidate> candidateList = new ArrayList<IceCandidate>();
 
-  // 保存用户的通话状态，正在通话则为1
+  // 保存用户的状态，忙的话为1。正在通话的话为2，结束时需要告诉对方。
   private int state = 0;
 
   // 判断有没有接听通话
@@ -95,16 +95,30 @@ public class UserSession {
     }
   }
 
-  public int getState() {
-    return state;
-  }
-
   public void setStateFree() {
     this.state = 0;
   }
 
-  public void setStateCalling() {
+  public void setStateBusy() {
     this.state = 1;
+  }
+
+  public void setStateCalling() {
+    this.state = 2;
+  }
+
+  public boolean isBusy() {
+    if(state != 0) {
+      return true;
+    }
+    return false;
+  }
+
+  public boolean isCalling() {
+    if(state == 2) {
+      return true;
+    }
+    return false;
   }
 
   public boolean isResponse() {
@@ -118,5 +132,18 @@ public class UserSession {
   public void clear() {
     this.webRtcEndpoint = null;
     this.candidateList.clear();
+  }
+
+  @Override
+  public String toString() {
+    return "UserSession{" +
+            "userID='" + userID + '\'' +
+            ", session=" + session +
+            ", sessionId=" + session.getId() +
+            ", callingTo='" + callingTo + '\'' +
+            ", callingFrom='" + callingFrom + '\'' +
+            ", state=" + state +
+            ", isResponse=" + isResponse +
+            '}';
   }
 }
