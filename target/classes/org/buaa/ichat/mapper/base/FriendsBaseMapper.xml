@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.buaa.ichat.mapper.base.FriendsBaseMapper">
+
+
+    <insert id="insertFriends"  useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `Friends`
+        (
+        <trim suffixOverrides=",">
+                    <if test="receiverID!=null">
+                        `receiverID`,
+                    </if>
+                    <if test="status!=null">
+                        `status`,
+                    </if>
+                    <if test="time!=null">
+                        `time`,
+                    </if>
+                    <if test="senderID!=null">
+                        `senderID`,
+                    </if>
+                    <if test="id!=null">
+                        `id`,
+                    </if>
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffixOverrides=",">
+                <if test="receiverID!=null">
+                    #{receiverID},
+                </if>
+                <if test="status!=null">
+                    #{status},
+                </if>
+                <if test="time!=null">
+                    #{time},
+                </if>
+                <if test="senderID!=null">
+                    #{senderID},
+                </if>
+                <if test="id!=null">
+                    #{id},
+                </if>
+        </trim>
+        )
+    </insert>
+
+
+
+
+    <update id="updateFriends">
+        UPDATE `Friends`
+        SET
+        <trim suffixOverrides=",">
+            <if test="receiverID != null">
+                `receiverID` = #{receiverID},
+            </if>
+            <if test="status != null">
+                `status` = #{status},
+            </if>
+            <if test="time != null and time!=''">
+                `time` = #{time},
+            </if>
+            <if test="senderID != null">
+                `senderID` = #{senderID},
+            </if>
+        </trim>
+        WHERE
+        <trim suffixOverrides="and">
+                `id` = #{id} and
+        </trim>
+    </update>
+
+    <update id="update">
+        UPDATE `Friends`
+        SET
+        <trim suffixOverrides=",">
+        <if test="set.receiverID != null">
+            `receiverID` = #{set.receiverID},
+        </if>
+        <if test="set.status != null">
+            `status` = #{set.status},
+        </if>
+        <if test="set.time != null and set.time!=''">
+            `time` = #{set.time},
+        </if>
+        <if test="set.senderID != null">
+            `senderID` = #{set.senderID},
+        </if>
+        </trim>
+        <trim prefix="where" suffixOverrides="and | or">
+                <if test="where.receiverIDList != null">
+                    `receiverID` in
+                    <foreach collection="where.receiverIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.receiverIDSt !=null">
+                `receiverID` >= #{where.receiverIDSt} and
+            </if>
+            <if test="where.receiverIDEd!=null">
+                `receiverID` &lt;= #{where.receiverIDEd} and
+            </if>
+                <if test="where.statusList != null">
+                    `status` in
+                    <foreach collection="where.statusList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.statusSt !=null">
+                `status` >= #{where.statusSt} and
+            </if>
+            <if test="where.statusEd!=null">
+                `status` &lt;= #{where.statusEd} and
+            </if>
+                <if test="where.timeList != null">
+                    `time` in
+                    <foreach collection="where.timeList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test ="where.fuzzyTime!=null and where.fuzzyTime.size()>0">
+                (
+                <foreach collection="where.fuzzyTime"  separator="or" item="item">
+                    `Time` like concat('%',#{item},'%')
+                </foreach>
+                ) and
+            </if>
+            <if test ="where.rightFuzzyTime!=null and where.rightFuzzyTime.size()>0">
+                (
+                <foreach collection="where.rightFuzzyTime"  separator="or" item="item">
+                    `Time` like concat(#{item},'%')
+                </foreach>
+                ) and
+            </if>
+                <if test="where.senderIDList != null">
+                    `senderID` in
+                    <foreach collection="where.senderIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.senderIDSt !=null">
+                `senderID` >= #{where.senderIDSt} and
+            </if>
+            <if test="where.senderIDEd!=null">
+                `senderID` &lt;= #{where.senderIDEd} and
+            </if>
+                <if test="where.idList != null">
+                    `id` in
+                    <foreach collection="where.idList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.idSt !=null">
+                `id` >= #{where.idSt} and
+            </if>
+            <if test="where.idEd!=null">
+                `id` &lt;= #{where.idEd} and
+            </if>
+        </trim>
+    </update>
+
+
+    <resultMap type="org.buaa.ichat.entity.Friends" id="FriendsMap">
+        <result property="receiverID" column="receiverID"/>
+        <result property="status" column="status"/>
+        <result property="time" column="time"/>
+        <result property="senderID" column="senderID"/>
+        <result property="id" column="id"/>
+    </resultMap>
+
+
+    <select id="queryFriends" resultMap="FriendsMap">
+        select
+        <include refid="baseResult"></include>
+        from  `Friends`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="receiverID != null">
+                `receiverID` = #{receiverID} and
+            </if>
+            <if test="status != null">
+                `status` = #{status} and
+            </if>
+            <if test="time != null and time!=''">
+                `time` = #{time} and
+            </if>
+            <if test="senderID != null">
+                `senderID` = #{senderID} and
+            </if>
+            <if test="id != null">
+                `id` = #{id} and
+            </if>
+            <if test = "(_parameter instanceof org.buaa.ichat.entity.Friends$QueryBuilder) == true">
+                <if test="receiverIDList != null">
+                    `receiverID` in
+                    <foreach collection="receiverIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="receiverIDSt !=null">
+                    `receiverID` >= #{receiverIDSt} and
+                </if>
+                <if test="receiverIDEd!=null">
+                    `receiverID` &lt;= #{receiverIDEd} and
+                </if>
+                <if test="statusList != null">
+                    `status` in
+                    <foreach collection="statusList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="statusSt !=null">
+                    `status` >= #{statusSt} and
+                </if>
+                <if test="statusEd!=null">
+                    `status` &lt;= #{statusEd} and
+                </if>
+                <if test="timeList != null">
+                    `time` in
+                    <foreach collection="timeList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test ="fuzzyTime!=null and fuzzyTime.size()>0">
+                    (
+                    <foreach collection="fuzzyTime"  separator="or" item="item">
+                        `Time` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyTime!=null and rightFuzzyTime.size()>0">
+                    (
+                    <foreach collection="rightFuzzyTime"  separator="or" item="item">
+                        `Time` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test="senderIDList != null">
+                    `senderID` in
+                    <foreach collection="senderIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="senderIDSt !=null">
+                    `senderID` >= #{senderIDSt} and
+                </if>
+                <if test="senderIDEd!=null">
+                    `senderID` &lt;= #{senderIDEd} and
+                </if>
+                <if test="idList != null">
+                    `id` in
+                    <foreach collection="idList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="idSt !=null">
+                    `id` >= #{idSt} and
+                </if>
+                <if test="idEd!=null">
+                    `id` &lt;= #{idEd} and
+                </if>
+            </if>
+        </trim>
+    </select>
+
+    <select id="queryFriendsLimit1" resultMap="FriendsMap">
+        select
+        <include refid="baseResult"></include>
+        from  `Friends`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="receiverID != null">
+                `receiverID` = #{receiverID} and
+            </if>
+            <if test="status != null">
+                `status` = #{status} and
+            </if>
+            <if test="time != null and time!=''">
+                `time` = #{time} and
+            </if>
+            <if test="senderID != null">
+                `senderID` = #{senderID} and
+            </if>
+            <if test="id != null">
+                `id` = #{id} and
+            </if>
+            <if test = "(_parameter instanceof org.buaa.ichat.entity.Friends$QueryBuilder) == true">
+                    <if test="receiverIDList != null">
+                        `receiverID` in
+                        <foreach collection="receiverIDList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="receiverIDSt !=null">
+                    `receiverID` >= #{receiverIDSt} and
+                </if>
+                <if test="receiverIDEd!=null">
+                    `receiverID` &lt;= #{receiverIDEd} and
+                </if>
+                    <if test="statusList != null">
+                        `status` in
+                        <foreach collection="statusList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="statusSt !=null">
+                    `status` >= #{statusSt} and
+                </if>
+                <if test="statusEd!=null">
+                    `status` &lt;= #{statusEd} and
+                </if>
+                    <if test="timeList != null">
+                        `time` in
+                        <foreach collection="timeList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test ="fuzzyTime!=null and fuzzyTime.size()>0">
+                    (
+                    <foreach collection="fuzzyTime"  separator="or" item="item">
+                        `Time` like concat('%',#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                <if test ="rightFuzzyTime!=null and rightFuzzyTime.size()>0">
+                    (
+                    <foreach collection="rightFuzzyTime"  separator="or" item="item">
+                        `Time` like concat(#{item},'%')
+                    </foreach>
+                    ) and
+                </if>
+                    <if test="senderIDList != null">
+                        `senderID` in
+                        <foreach collection="senderIDList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="senderIDSt !=null">
+                    `senderID` >= #{senderIDSt} and
+                </if>
+                <if test="senderIDEd!=null">
+                    `senderID` &lt;= #{senderIDEd} and
+                </if>
+                    <if test="idList != null">
+                        `id` in
+                        <foreach collection="idList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="idSt !=null">
+                    `id` >= #{idSt} and
+                </if>
+                <if test="idEd!=null">
+                    `id` &lt;= #{idEd} and
+                </if>
+            </if>
+        </trim>
+        limit 1
+    </select>
+
+    <sql id="allResult">
+        <trim suffixOverrides=",">
+        `receiverID`,
+        `status`,
+        `time`,
+        `senderID`,
+        `id`,
+        </trim>
+    </sql>
+
+
+
+    <sql id="baseResult">
+        <trim suffixOverrides=",">
+            <if test = "(_parameter instanceof org.buaa.ichat.entity.Friends$QueryBuilder) == true">
+
+                <if test="fetchFields==null">
+                    <include refid="allResult"></include>
+                </if>
+                <if test="fetchFields!=null">
+                    <if test="fetchFields.AllFields !=null">
+                        <include refid="allResult"></include>
+                    </if>
+                    <if test="fetchFields.AllFields ==null and fetchFields.fetchFields==null and fetchFields.excludeFields==null and fetchFields.otherFields==null">
+                        <include refid="allResult"></include>
+                    </if>
+                    <if test="fetchFields.AllFields==null and fetchFields.fetchFields!=null">
+                    <if test="fetchFields.fetchFields.receiverID==true">
+                        `receiverID`,
+                    </if>
+                    <if test="fetchFields.fetchFields.status==true">
+                        `status`,
+                    </if>
+                    <if test="fetchFields.fetchFields.time==true">
+                        `time`,
+                    </if>
+                    <if test="fetchFields.fetchFields.senderID==true">
+                        `senderID`,
+                    </if>
+                    <if test="fetchFields.fetchFields.id==true">
+                        `id`,
+                    </if>
+                    </if>
+                    <if test="fetchFields.AllFields==null and fetchFields.excludeFields!=null">
+                    <if test="fetchFields.excludeFields.receiverID==null">
+                        `receiverID`,
+                    </if>
+                    <if test="fetchFields.excludeFields.status==null">
+                        `status`,
+                    </if>
+                    <if test="fetchFields.excludeFields.time==null">
+                        `time`,
+                    </if>
+                    <if test="fetchFields.excludeFields.senderID==null">
+                        `senderID`,
+                    </if>
+                    <if test="fetchFields.excludeFields.id==null">
+                        `id`,
+                    </if>
+                    </if>
+                    <if test="fetchFields.otherFields!=null and fetchFields.otherFields.size>0">
+                        <foreach collection="fetchFields.otherFields" index="index" item="item" separator=",">
+                        `#{item}`
+                        </foreach>
+                    </if>
+                </if>
+            </if>
+            <if test="(_parameter instanceof org.buaa.ichat.entity.Friends$QueryBuilder) == false" >
+                <include refid="allResult"></include>
+            </if>
+
+        </trim>
+    </sql>
+
+
+</mapper>
