@@ -15,6 +15,34 @@ public class MessageController {
     @Autowired
     MessageService messageService;
 
+    @PostMapping({"insertmsg"})
+    public RetResult<Object> insertmsg(Integer userID, Integer receiverID, String content)
+    {
+        try
+        {
+            messageService.insertMSG(userID, content, receiverID);
+            return RetResponse.makeOKRsp();
+        }
+        catch (Exception e)
+        {
+            return RetResponse.makeErrRsp(e.getMessage());
+        }
+    }
+
+    @PostMapping({"insertgmsg"})
+    public RetResult<Object> insertgmsg(Integer userID, Integer groupID, String content)
+    {
+        try
+        {
+            messageService.insertGMSG(userID, content, groupID);
+            return RetResponse.makeOKRsp();
+        }
+        catch (Exception e)
+        {
+            return RetResponse.makeErrRsp(e.getMessage());
+        }
+    }
+
     @GetMapping(value = "chatlist")
     public RetResult<Object> getChatList()
     {
@@ -73,11 +101,11 @@ public class MessageController {
     }
 
     @PostMapping({"readmsg"})
-    public RetResult<Object> updateReadMSG(Integer msgID)
+    public RetResult<Object> updateReadMSG(Integer userID)
     {
         try
         {
-            messageService.updateNoSentMSG(msgID);
+            messageService.updateNoSentMSG(userID);
             return RetResponse.makeOKRsp();
         }
         catch (Exception e)
@@ -87,11 +115,11 @@ public class MessageController {
     }
 
     @PostMapping({"readgmsg"})
-    public RetResult<Object> updateReadGMSG(Integer gmsgID, Integer receiverID)
+    public RetResult<Object> updateReadGMSG(Integer groupID)
     {
         try
         {
-            messageService.updateNoSentGMSG(gmsgID, receiverID);
+            messageService.updateNoSentGMSG(groupID);
             return RetResponse.makeOKRsp();
         }
         catch (Exception e)

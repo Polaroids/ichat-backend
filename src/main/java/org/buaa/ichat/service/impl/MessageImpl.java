@@ -6,9 +6,10 @@ import org.buaa.ichat.mapper.*;
 import org.buaa.ichat.service.FriendService;
 import org.buaa.ichat.service.GroupService;
 import org.buaa.ichat.service.MessageService;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.alibaba.fastjson.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -108,36 +109,44 @@ public class MessageImpl implements MessageService {
             throw new Exception("参数缺失");
         List<GMSGSend> gmsgSends = gmsgSendMapper.queryGMSGSend(GMSGSend.QueryBuild().groupID(groupID).receiverID(receiverID).status(0).build());
         List<Integer> gm_IDList = new ArrayList<>();
+
         for(GMSGSend gmsgSend: gmsgSends)
             gm_IDList.add(gmsgSend.getGM_ID());
+
+        if(gm_IDList.size() <= 0)
+            return new ArrayList<>();
         return groupMSGMapper.queryGroupMSG(GroupMSG.QueryBuild().GM_IDList(gm_IDList));
     }
 
     @Override
-    public void updateNoSentMSG(Integer msgID) throws Exception
+    public void updateNoSentMSG(Integer userID) throws Exception
     {
-        if(msgID == null)
+        if(userID == null)
             throw new Exception("参数缺失");
+
+        Integer ID = new Integer((String)SecurityUtils.getSubject().getPrincipal());
         Message.UpdateBuilder updateBuilder = Message.UpdateBuild();
         updateBuilder
                 .set(
                         Message.Build()
                                 .sent(1).build())
-                .where(Message.ConditionBuild().messageIDList(msgID).build());
+                .where(Message.ConditionBuild().senderIDList(userID).receiverIDList(ID).build());
         messageMapper.update(updateBuilder.build());
     }
 
     @Override
-    public void updateNoSentGMSG(Integer gmsgID, Integer receiverID) throws Exception
+    public void updateNoSentGMSG(Integer groupID) throws Exception
     {
-        if(gmsgID == null || receiverID == null)
+        if(groupID == null)
             throw new Exception("参数缺失");
+
+        Integer ID = new Integer((String)SecurityUtils.getSubject().getPrincipal());
         GMSGSend.UpdateBuilder updateBuilder = GMSGSend.UpdateBuild();
         updateBuilder
                 .set(
                         GMSGSend.Build()
                                 .status(1).build())
-                .where(GMSGSend.ConditionBuild().GM_IDList(gmsgID).receiverIDList(receiverID).build());
+                .where(GMSGSend.ConditionBuild().groupIDList(groupID).receiverIDList(ID).build());
         gmsgSendMapper.update(updateBuilder.build());
     }
 
@@ -152,7 +161,7 @@ public class MessageImpl implements MessageService {
             return getNoSendMSG(userID, ID);
 
         List<Message> rightMessages = messageMapper.queryMessage(Message.QueryBuild().senderID(ID).receiverID(userID).messageIDLessEqThan(msgID).build());
-        List<Message> leftMessages = messageMapper.queryMessage(Message.QueryBuild().senderID(userID).senderID(ID).messageIDLessEqThan(msgID).build());
+        List<Message> leftMessages = messageMapper.queryMessage(Message.QueryBuild().senderID(userID).receiverID(ID).messageIDLessEqThan(msgID).build());
 
         List<Message> ans = new ArrayList<>();
         int rn = rightMessages.size() - 1;
@@ -160,15 +169,15 @@ public class MessageImpl implements MessageService {
 
         while(ans.size() < 30)
         {
-            if(ln <= 0 && rn <= 0)
+            if(ln < 0 && rn < 0)
                 break;
-            if(ln <= 0)
+            if(ln < 0)
             {
                 ans.add(rightMessages.get(rn));
                 rightMessages.remove(rn);
                 rn--;
             }
-            else if(rn <= 0)
+            else if(rn < 0)
             {
                 ans.add(leftMessages.get(ln));
                 leftMessages.remove(ln);

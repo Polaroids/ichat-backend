@@ -2,7 +2,7 @@ package org.buaa.ichat.service;
 
 import org.buaa.ichat.entity.GroupMSG;
 import org.buaa.ichat.entity.Message;
-import org.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
 
 import java.util.List;
 
@@ -14,8 +14,8 @@ public interface MessageService {
     public List<Message> getNoSendMSG(Integer userID, Integer receiverID)throws Exception;
     public GroupMSG getGMSGByID(Integer GM_ID)throws Exception;
     public List<GroupMSG> getNoSendGMSG(Integer groupID, Integer receiverID)throws Exception;
-    public void updateNoSentMSG(Integer msgID)throws Exception;
-    public void updateNoSentGMSG(Integer gmsgID, Integer receiverID)throws Exception;
+    public void updateNoSentMSG(Integer userID)throws Exception;
+    public void updateNoSentGMSG(Integer groupID)throws Exception;
     public List<Message> getHistoryMSG(Integer userID, Integer msgID)throws Exception;
     public List<GroupMSG> getHistoryGMSG(Integer groupID, Integer gmsgID)throws Exception;
     public List<JSONObject> getChatList()throws Exception;
