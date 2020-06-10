@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.buaa.ichat.mapper.GroupMSGMapper">
+    <select id="getGroupMsgByID" resultType="org.buaa.ichat.entity.GroupMSG">
+        select * from GroupMSG,GMSGSend where
+        groupID = #{ groupID } AND `GroupMSG`.GM_ID = `GMSGSend`.GM_ID
+        group by `GroupMSG`.GM_ID;
+    </select>
+
+</mapper>

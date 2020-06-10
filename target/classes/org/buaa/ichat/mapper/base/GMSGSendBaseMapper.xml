@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.buaa.ichat.mapper.base.GMSGSendBaseMapper">
+
+
+    <insert id="insertGMSGSend"  useGeneratedKeys="true" keyProperty="ID">
+        INSERT INTO `GMSGSend`
+        (
+        <trim suffixOverrides=",">
+                    <if test="ID!=null">
+                        `ID`,
+                    </if>
+                    <if test="receiverID!=null">
+                        `receiverID`,
+                    </if>
+                    <if test="GM_ID!=null">
+                        `GM_ID`,
+                    </if>
+                    <if test="groupID!=null">
+                        `groupID`,
+                    </if>
+                    <if test="status!=null">
+                        `status`,
+                    </if>
+        </trim>
+        )
+        VALUES
+        (
+        <trim suffixOverrides=",">
+                <if test="ID!=null">
+                    #{ID},
+                </if>
+                <if test="receiverID!=null">
+                    #{receiverID},
+                </if>
+                <if test="GM_ID!=null">
+                    #{GM_ID},
+                </if>
+                <if test="groupID!=null">
+                    #{groupID},
+                </if>
+                <if test="status!=null">
+                    #{status},
+                </if>
+        </trim>
+        )
+    </insert>
+
+
+
+
+    <update id="updateGMSGSend">
+        UPDATE `GMSGSend`
+        SET
+        <trim suffixOverrides=",">
+            <if test="receiverID != null">
+                `receiverID` = #{receiverID},
+            </if>
+            <if test="GM_ID != null">
+                `GM_ID` = #{GM_ID},
+            </if>
+            <if test="groupID != null">
+                `groupID` = #{groupID},
+            </if>
+            <if test="status != null">
+                `status` = #{status},
+            </if>
+        </trim>
+        WHERE
+        <trim suffixOverrides="and">
+                `ID` = #{ID} and
+        </trim>
+    </update>
+
+    <update id="update">
+        UPDATE `GMSGSend`
+        SET
+        <trim suffixOverrides=",">
+        <if test="set.receiverID != null">
+            `receiverID` = #{set.receiverID},
+        </if>
+        <if test="set.GM_ID != null">
+            `GM_ID` = #{set.GM_ID},
+        </if>
+        <if test="set.groupID != null">
+            `groupID` = #{set.groupID},
+        </if>
+        <if test="set.status != null">
+            `status` = #{set.status},
+        </if>
+        </trim>
+        <trim prefix="where" suffixOverrides="and | or">
+                <if test="where.IDList != null">
+                    `ID` in
+                    <foreach collection="where.IDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.IDSt !=null">
+                `ID` >= #{where.IDSt} and
+            </if>
+            <if test="where.IDEd!=null">
+                `ID` &lt;= #{where.IDEd} and
+            </if>
+                <if test="where.receiverIDList != null">
+                    `receiverID` in
+                    <foreach collection="where.receiverIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.receiverIDSt !=null">
+                `receiverID` >= #{where.receiverIDSt} and
+            </if>
+            <if test="where.receiverIDEd!=null">
+                `receiverID` &lt;= #{where.receiverIDEd} and
+            </if>
+                <if test="where.GM_IDList != null">
+                    `GM_ID` in
+                    <foreach collection="where.GM_IDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.GM_IDSt !=null">
+                `GM_ID` >= #{where.GM_IDSt} and
+            </if>
+            <if test="where.GM_IDEd!=null">
+                `GM_ID` &lt;= #{where.GM_IDEd} and
+            </if>
+                <if test="where.groupIDList != null">
+                    `groupID` in
+                    <foreach collection="where.groupIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.groupIDSt !=null">
+                `groupID` >= #{where.groupIDSt} and
+            </if>
+            <if test="where.groupIDEd!=null">
+                `groupID` &lt;= #{where.groupIDEd} and
+            </if>
+                <if test="where.statusList != null">
+                    `status` in
+                    <foreach collection="where.statusList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+            <if test="where.statusSt !=null">
+                `status` >= #{where.statusSt} and
+            </if>
+            <if test="where.statusEd!=null">
+                `status` &lt;= #{where.statusEd} and
+            </if>
+        </trim>
+    </update>
+
+
+    <resultMap type="org.buaa.ichat.entity.GMSGSend" id="GMSGSendMap">
+        <result property="ID" column="ID"/>
+        <result property="receiverID" column="receiverID"/>
+        <result property="GM_ID" column="GM_ID"/>
+        <result property="groupID" column="groupID"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+
+    <select id="queryGMSGSend" resultMap="GMSGSendMap">
+        select
+        <include refid="baseResult"></include>
+        from  `GMSGSend`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="ID != null">
+                `ID` = #{ID} and
+            </if>
+            <if test="receiverID != null">
+                `receiverID` = #{receiverID} and
+            </if>
+            <if test="GM_ID != null">
+                `GM_ID` = #{GM_ID} and
+            </if>
+            <if test="groupID != null">
+                `groupID` = #{groupID} and
+            </if>
+            <if test="status != null">
+                `status` = #{status} and
+            </if>
+            <if test = "(_parameter instanceof org.buaa.ichat.entity.GMSGSend$QueryBuilder) == true">
+                <if test="IDList != null">
+                    `ID` in
+                    <foreach collection="IDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="IDSt !=null">
+                    `ID` >= #{IDSt} and
+                </if>
+                <if test="IDEd!=null">
+                    `ID` &lt;= #{IDEd} and
+                </if>
+                <if test="receiverIDList != null">
+                    `receiverID` in
+                    <foreach collection="receiverIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="receiverIDSt !=null">
+                    `receiverID` >= #{receiverIDSt} and
+                </if>
+                <if test="receiverIDEd!=null">
+                    `receiverID` &lt;= #{receiverIDEd} and
+                </if>
+                <if test="GM_IDList != null">
+                    `GM_ID` in
+                    <foreach collection="GM_IDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="GM_IDSt !=null">
+                    `GM_ID` >= #{GM_IDSt} and
+                </if>
+                <if test="GM_IDEd!=null">
+                    `GM_ID` &lt;= #{GM_IDEd} and
+                </if>
+                <if test="groupIDList != null">
+                    `groupID` in
+                    <foreach collection="groupIDList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="groupIDSt !=null">
+                    `groupID` >= #{groupIDSt} and
+                </if>
+                <if test="groupIDEd!=null">
+                    `groupID` &lt;= #{groupIDEd} and
+                </if>
+                <if test="statusList != null">
+                    `status` in
+                    <foreach collection="statusList" close=")" open="(" separator="," item="item">
+                        #{item}
+                    </foreach> and
+                </if>
+                <if test="statusSt !=null">
+                    `status` >= #{statusSt} and
+                </if>
+                <if test="statusEd!=null">
+                    `status` &lt;= #{statusEd} and
+                </if>
+            </if>
+        </trim>
+    </select>
+
+    <select id="queryGMSGSendLimit1" resultMap="GMSGSendMap">
+        select
+        <include refid="baseResult"></include>
+        from  `GMSGSend`
+        <trim prefix="where" suffixOverrides="and | or">
+            <if test="ID != null">
+                `ID` = #{ID} and
+            </if>
+            <if test="receiverID != null">
+                `receiverID` = #{receiverID} and
+            </if>
+            <if test="GM_ID != null">
+                `GM_ID` = #{GM_ID} and
+            </if>
+            <if test="groupID != null">
+                `groupID` = #{groupID} and
+            </if>
+            <if test="status != null">
+                `status` = #{status} and
+            </if>
+            <if test = "(_parameter instanceof org.buaa.ichat.entity.GMSGSend$QueryBuilder) == true">
+                    <if test="IDList != null">
+                        `ID` in
+                        <foreach collection="IDList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="IDSt !=null">
+                    `ID` >= #{IDSt} and
+                </if>
+                <if test="IDEd!=null">
+                    `ID` &lt;= #{IDEd} and
+                </if>
+                    <if test="receiverIDList != null">
+                        `receiverID` in
+                        <foreach collection="receiverIDList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="receiverIDSt !=null">
+                    `receiverID` >= #{receiverIDSt} and
+                </if>
+                <if test="receiverIDEd!=null">
+                    `receiverID` &lt;= #{receiverIDEd} and
+                </if>
+                    <if test="GM_IDList != null">
+                        `GM_ID` in
+                        <foreach collection="GM_IDList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="GM_IDSt !=null">
+                    `GM_ID` >= #{GM_IDSt} and
+                </if>
+                <if test="GM_IDEd!=null">
+                    `GM_ID` &lt;= #{GM_IDEd} and
+                </if>
+                    <if test="groupIDList != null">
+                        `groupID` in
+                        <foreach collection="groupIDList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="groupIDSt !=null">
+                    `groupID` >= #{groupIDSt} and
+                </if>
+                <if test="groupIDEd!=null">
+                    `groupID` &lt;= #{groupIDEd} and
+                </if>
+                    <if test="statusList != null">
+                        `status` in
+                        <foreach collection="statusList" close=")" open="(" separator="," item="item">
+                            #{item}
+                        </foreach> and
+                    </if>
+                <if test="statusSt !=null">
+                    `status` >= #{statusSt} and
+                </if>
+                <if test="statusEd!=null">
+                    `status` &lt;= #{statusEd} and
+                </if>
+            </if>
+        </trim>
+        limit 1
+    </select>
+
+    <sql id="allResult">
+        <trim suffixOverrides=",">
+        `ID`,
+        `receiverID`,
+        `GM_ID`,
+        `groupID`,
+        `status`,
+        </trim>
+    </sql>
+
+
+
+    <sql id="baseResult">
+        <trim suffixOverrides=",">
+            <if test = "(_parameter instanceof org.buaa.ichat.entity.GMSGSend$QueryBuilder) == true">
+
+                <if test="fetchFields==null">
+                    <include refid="allResult"></include>
+                </if>
+                <if test="fetchFields!=null">
+                    <if test="fetchFields.AllFields !=null">
+                        <include refid="allResult"></include>
+                    </if>
+                    <if test="fetchFields.AllFields ==null and fetchFields.fetchFields==null and fetchFields.excludeFields==null and fetchFields.otherFields==null">
+                        <include refid="allResult"></include>
+                    </if>
+                    <if test="fetchFields.AllFields==null and fetchFields.fetchFields!=null">
+                    <if test="fetchFields.fetchFields.ID==true">
+                        `ID`,
+                    </if>
+                    <if test="fetchFields.fetchFields.receiverID==true">
+                        `receiverID`,
+                    </if>
+                    <if test="fetchFields.fetchFields.GM_ID==true">
+                        `GM_ID`,
+                    </if>
+                    <if test="fetchFields.fetchFields.groupID==true">
+                        `groupID`,
+                    </if>
+                    <if test="fetchFields.fetchFields.status==true">
+                        `status`,
+                    </if>
+                    </if>
+                    <if test="fetchFields.AllFields==null and fetchFields.excludeFields!=null">
+                    <if test="fetchFields.excludeFields.ID==null">
+                        `ID`,
+                    </if>
+                    <if test="fetchFields.excludeFields.receiverID==null">
+                        `receiverID`,
+                    </if>
+                    <if test="fetchFields.excludeFields.GM_ID==null">
+                        `GM_ID`,
+                    </if>
+                    <if test="fetchFields.excludeFields.groupID==null">
+                        `groupID`,
+                    </if>
+                    <if test="fetchFields.excludeFields.status==null">
+                        `status`,
+                    </if>
+                    </if>
+                    <if test="fetchFields.otherFields!=null and fetchFields.otherFields.size>0">
+                        <foreach collection="fetchFields.otherFields" index="index" item="item" separator=",">
+                        `#{item}`
+                        </foreach>
+                    </if>
+                </if>
+            </if>
+            <if test="(_parameter instanceof org.buaa.ichat.entity.GMSGSend$QueryBuilder) == false" >
+                <include refid="allResult"></include>
+            </if>
+
+        </trim>
+    </sql>
+
+
+</mapper>
