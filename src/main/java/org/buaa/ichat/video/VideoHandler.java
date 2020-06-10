@@ -103,6 +103,7 @@ public class VideoHandler {
     public void onMessage(Session session, String message) throws Exception {
         JsonObject jsonMessage = gson.fromJson(message, JsonObject.class);
         UserSession user = getUserSessionBySession(session);
+        logger.info(message);
         switch (jsonMessage.get("type").getAsString()) {
             case "ping": // 心跳连接用
                 JsonObject pongMessage = new JsonObject();
@@ -366,7 +367,7 @@ public class VideoHandler {
                 if (stoppee != null) {
                     stoppee.setStateFree();
                     JsonObject message = new JsonObject();
-                    message.addProperty("type", "stopCommmunication");
+                    message.addProperty("type", "stopCommunication");
                     message.addProperty("reason", reason);
                     stoppee.sendMessage(message);
                     stoppee.clear();

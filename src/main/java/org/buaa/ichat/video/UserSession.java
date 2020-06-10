@@ -70,7 +70,7 @@ public class UserSession {
   }
 
   public void sendMessage(JsonObject message) throws IOException {
-    logger.info("Sending message from user '{}': {}", userID, message);
+    logger.info("Sending message to user '{}': {}", userID, message);
     session.getAsyncRemote().sendText(message.toString());
   }
 
