@@ -51,4 +51,18 @@ public class GroupFileImpl implements GroupFileService {
         //这里需要删除实体文件的逻辑
         groupFileMapper.delete(fileID);
     }
+
+    @Override
+    public GroupFile queryFile(Integer fileID) throws Exception {
+        GroupFile con = GroupFile.QueryBuild().fileID(fileID).build();
+        GroupFile ans = groupFileMapper.queryGroupFileLimit1(con);
+
+        if (fileID == null)
+            throw new Exception("参数缺失");
+        if(ans == null)
+            throw  new Exception("不存在该文件");
+        return ans;
+//        return groupFileMapper.queryGroupFileLimit1(GroupFile.QueryBuild().fileID(fileID).build());
+    }
+
 }
