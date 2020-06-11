@@ -89,11 +89,6 @@ public class FTPUtil {
                 sftp.mkdir(dirName);
             }
             sftp.cd(dirName);
-//            //列出服务器指定的文件列表
-//            Vector v = sftp.ls("*");
-//            for(int i=0;i<v.size();i++){
-//                System.out.println(v.get(i));
-//            }
 
             outstream = sftp.put(fileName);//实现从本地上传一个文件到服务器，如果要实现下载，对换以下流就可以了
             outstream.write(bytes);
@@ -101,7 +96,7 @@ public class FTPUtil {
 
 
         } catch (Exception e) {
-//            e.printStackTrace();
+            e.printStackTrace();
         } finally {
             //关流操作
             if (outstream != null) { outstream.flush();outstream.close(); }
@@ -250,7 +245,6 @@ public class FTPUtil {
 
             sftp.cd(baseFilePath);
             String realurl=baseFilePath + "/" + groupIDdir + "/" + fileName;
-            System.out.println(realurl);
 
             try {
                 sftp.cd(groupIDdir);
@@ -261,7 +255,7 @@ public class FTPUtil {
             }catch (Exception e){}
 
         } catch (Exception e) {
-//            e.printStackTrace();
+            e.printStackTrace();
         } finally {
             if (session != null) { session.disconnect(); }
             if (channel != null) { channel.disconnect(); }
@@ -294,8 +288,6 @@ public class FTPUtil {
         session.setConfig("StrictHostKeyChecking", "no");//设置第一次登陆的时候提示，可选值：(ask | yes | no)
         session.connect(30000);//设置登陆超时时间
 
-//        String dst = "D:\\IntellijProject\\localfile" + "\\" + fileName;
-//        OutputStream out = new FileOutputStream(dst);
 
         response.setHeader("content-disposition", "attachment;filename="+URLEncoder.encode(fileName, "UTF-8"));
         OutputStream out=response.getOutputStream();
@@ -316,7 +308,7 @@ public class FTPUtil {
             }catch (Exception e){}
 
         } catch (Exception e) {
-//            e.printStackTrace();
+            e.printStackTrace();
         } finally {
             if (out != null) { out.flush();out.close();}
             if (session != null) { session.disconnect(); }

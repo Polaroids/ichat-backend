@@ -136,7 +136,7 @@ public class GroupController {
             targetFile = groupFileService.queryFile(fileID);
             if(targetFile == null)
                 return RetResponse.makeErrRsp("The file does not exist!");
-            if(groupID != targetFile.getUploadGroupID())
+            if(!groupID.equals(targetFile.getUploadGroupID()))
                 return RetResponse.makeErrRsp("The file is not in this group!");
             return RetResponse.makeOKRsp(targetFile);
         } catch (Exception e) {
@@ -153,7 +153,7 @@ public class GroupController {
             targetFile = groupFileService.queryFile(fileID);
             if(targetFile == null)
                 return RetResponse.makeErrRsp("The file does not exist!");
-            if(groupID != targetFile.getUploadGroupID())
+            if(!groupID.equals(targetFile.getUploadGroupID()))
                 return RetResponse.makeErrRsp("The file is not in this group!");
             fileUrl = targetFile.getFileUrl();
 //            fileUrl = "http://212.64.78.189:8601/files/11/test2.rar";
@@ -174,9 +174,9 @@ public class GroupController {
             targetFile = groupFileService.queryFile(fileID);
             if(targetFile == null)
                 return RetResponse.makeErrRsp("The file does not exist!");
-            if(groupID != targetFile.getUploadGroupID())
+            if(!groupID.equals(targetFile.getUploadGroupID()))
                 return RetResponse.makeErrRsp("The file is not in this group!");
-            if(getUserID() != targetFile.getUploadUserID())
+            if(!getUserID().equals(targetFile.getUploadUserID()))
                 return RetResponse.makeErrRsp("You are not the uploader so that you cannot delete this file!");
 
             fileUrl = groupFileService.queryFile(fileID).getFileUrl();
