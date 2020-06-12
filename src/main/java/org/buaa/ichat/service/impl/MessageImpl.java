@@ -157,11 +157,20 @@ public class MessageImpl implements MessageService {
         if(userID == null || msgID == null)
             throw new Exception("参数缺失");
         Integer ID = new Integer((String) SecurityUtils.getSubject().getPrincipal());
-        if(msgID < 0)
-            return getNoSendMSG(userID, ID);
+        List<Message> rightMessages = new ArrayList<>();
+        List<Message> leftMessages = new ArrayList<>();
 
-        List<Message> rightMessages = messageMapper.queryMessage(Message.QueryBuild().senderID(ID).receiverID(userID).messageIDLessEqThan(msgID).build());
-        List<Message> leftMessages = messageMapper.queryMessage(Message.QueryBuild().senderID(userID).receiverID(ID).messageIDLessEqThan(msgID).build());
+        if(msgID < 0)
+        {
+            rightMessages = messageMapper.queryMessage(Message.QueryBuild().senderID(ID).receiverID(userID).build());
+            leftMessages = messageMapper.queryMessage(Message.QueryBuild().senderID(userID).receiverID(ID).build());
+            // return getNoSendMSG(userID, ID);
+        }
+        else
+        {
+            rightMessages = messageMapper.queryMessage(Message.QueryBuild().senderID(ID).receiverID(userID).messageIDLessEqThan(msgID).build());
+            leftMessages = messageMapper.queryMessage(Message.QueryBuild().senderID(userID).receiverID(ID).messageIDLessEqThan(msgID).build());
+        }
 
         List<Message> ans = new ArrayList<>();
         int rn = rightMessages.size() - 1;
@@ -206,17 +215,31 @@ public class MessageImpl implements MessageService {
         if(groupID == null || gmsgID == null)
             throw new Exception("参数缺失");
         Integer ID = new Integer((String)SecurityUtils.getSubject().getPrincipal());
-        if(gmsgID < 0)
-            return getNoSendGMSG(groupID, ID);
 
         List<GroupMSG> groupMSGs = groupMSGMapper.getGroupMsgByID(groupID);
         Integer groupMSGsIndex = groupMSGs.size() - 1;
 
-        while(groupMSGsIndex >= 0 && groupMSGs.get(groupMSGsIndex).getGM_ID() > gmsgID)
+        List<GroupMSG> ans = new ArrayList<>();
+
+        //latest 30 gmsgs
+        if(gmsgID < 0)
         {
-            groupMSGs.remove(groupMSGsIndex);
-            groupMSGsIndex --;
+            while(ans.size() < 30 && groupMSGsIndex >= 0)
+            {
+                ans.add(groupMSGs.get(groupMSGsIndex));
+                groupMSGsIndex --;
+            }
+            return ans;
         }
+        else
+        {
+            while(groupMSGsIndex >= 0 && groupMSGs.get(groupMSGsIndex).getGM_ID() > gmsgID)
+            {
+                groupMSGs.remove(groupMSGsIndex);
+                groupMSGsIndex --;
+            }
+        }
+
 
         if(groupMSGsIndex < 29)
             return groupMSGs;
