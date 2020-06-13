@@ -46,6 +46,8 @@ public class WSServer {
     @OnOpen
     public void onOpen(Session session){
 
+        logger.info(session.toString() + "login");
+
         this.ID = new Integer((String) SecurityUtils.getSubject().getPrincipal());
         this.session = session;
 
