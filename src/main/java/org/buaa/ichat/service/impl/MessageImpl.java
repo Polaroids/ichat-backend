@@ -256,20 +256,29 @@ public class MessageImpl implements MessageService {
         List<Group> groups = groupService.getGroups(ID);
 
         Integer noSendNum;
+        Integer historyNum;
 
         List<JSONObject> ans = new ArrayList<JSONObject>();
 
         for(User friend: friends)
         {
-            List<Message> noSendMSG = getNoSendMSG(friend.getUserID(), ID);
+            List<Message> latestMSGs = getHistoryMSG(friend.getUserID(), -1);
+            historyNum = latestMSGs.size();
+            //聊天列表只需要有历史消息的聊天
+            if(latestMSGs.size() <= 0)
+                continue;
 
+            //有历史消息的再检查有没有未读消息
+            List<Message> noSendMSG = getNoSendMSG(friend.getUserID(), ID);
             noSendNum = noSendMSG.size();
 
             //聊天列表只需要有未读消息的聊天
-            if(noSendNum <= 0)
-                continue;
+            //改需求了 cnm
+            //if(noSendNum <= 0)
+            //    continue;
 
-            Message lastMSG = noSendMSG.get(noSendNum - 1);
+            //Message lastMSG = noSendMSG.get(noSendNum - 1);
+            Message lastMSG = latestMSGs.get(historyNum - 1);
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("ID", friend.getUserID());
@@ -284,14 +293,19 @@ public class MessageImpl implements MessageService {
 
         for(Group group: groups)
         {
-            List<GroupMSG> noSendGMSG = getNoSendGMSG(group.getGroupID(), ID);
-
-            noSendNum = noSendGMSG.size();
-
-            if(noSendNum <= 0)
+            List<GroupMSG> latestGMSGs = getHistoryGMSG(group.getGroupID(), -1);
+            historyNum = latestGMSGs.size();
+            if(latestGMSGs.size() <= 0)
                 continue;
 
-            GroupMSG lastGMSG = noSendGMSG.get(noSendNum - 1);
+            List<GroupMSG> noSendGMSG = getNoSendGMSG(group.getGroupID(), ID);
+            noSendNum = noSendGMSG.size();
+
+            //if(noSendNum <= 0)
+            //    continue;
+
+            //GroupMSG lastGMSG = noSendGMSG.get(noSendNum - 1);
+            GroupMSG lastGMSG = latestGMSGs.get(historyNum - 1);
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("ID", group.getGroupID());
