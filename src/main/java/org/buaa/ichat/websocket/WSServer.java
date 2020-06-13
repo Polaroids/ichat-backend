@@ -11,6 +11,7 @@ import org.buaa.ichat.service.GroupService;
 import org.buaa.ichat.service.MessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -23,10 +24,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * @ServerEndpoint 注解是一个类层次的注解，它的功能主要是将目前的类定义成一个websocket服务器端,
  * 注解的值将被用于监听用户连接的终端访问URL地址,客户端可以通过这个URL来连接到WebSocket服务器端
  */
-@ServerEndpoint("/websocket")
+@ServerEndpoint(value = "/websocket")
 @Component
 public class WSServer {
-    private final Logger logger = LoggerFactory.getLogger(WSServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(WSServer.class);
 
     private static final Map<Integer, Session> users = new ConcurrentHashMap<>();
 
@@ -34,7 +35,9 @@ public class WSServer {
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
 
+    @Autowired
     MessageService messageService;
+    @Autowired
     GroupService groupService;
 
     private static final Gson gson = new GsonBuilder().create();

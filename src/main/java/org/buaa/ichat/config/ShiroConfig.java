@@ -32,6 +32,7 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/api/user/register", "anon");
         filterChainDefinitionMap.put("/api/group/test", "anon");
         filterChainDefinitionMap.put("/videoCall", "anon");
+        //filterChainDefinitionMap.put("/websocket", "anon");
 
 
         // 不拦截static文件夹的静态资源。最后应该不需要使用这个，暂时先放着
