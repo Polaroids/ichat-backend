@@ -49,14 +49,17 @@ public class WSServer {
     @OnOpen
     public void onOpen(Session session){
 
-        logger.info(session.toString() + "login");
+        logger.info(session.getId() + " is connecting wss");
 
-        this.ID = new Integer((String) SecurityUtils.getSubject().getPrincipal());
+        //this.ID = new Integer((String) SecurityUtils.getSubject().getPrincipal());
+        //this.ID = 1000000;
+
+        this.ID = -1;
         this.session = session;
 
-        logger.info(ID + "login");
+        //logger.info(ID + "login");
 
-        users.put(ID, session);
+        //users.put(ID, session);
     }
 
     /**
@@ -78,46 +81,99 @@ public class WSServer {
      */
     @OnMessage
     public void onMessage(String message, Session session) {
-        logger.info("来自"+ ID + "的消息:" + message);
+        logger.info("来自"+ session.getId() + "的消息:" + message);
 
         JsonObject jsonObject = gson.fromJson(message, JsonObject.class);
-
-        String msg = jsonObject.get("message").getAsString();
         Integer type = jsonObject.get("type").getAsInt();
-        Integer userID = jsonObject.get("ID").getAsInt();
 
-        System.out.println("userID:" + userID + "\n"
-                            + "type:" + type + "\n"
-                            + "message:" + msg);
-
-        try
+        switch(type)
         {
-            if(type == 0)
-            {
-                Integer msgID = messageService.insertMSG(this.ID, msg, userID);
-                Message message1 = messageService.getMSGByID(msgID);
-                if(users.containsKey(userID))
-                    users.get(userID).getBasicRemote().sendText(message1.toString());
-            }
-            else if(type == 1)
-            {
-                Integer msgID = messageService.insertGMSG(this.ID, msg, userID);
-                GroupMSG groupMSG = messageService.getGMSGByID(msgID);
-                List<User> members = groupService.getMembers(userID);
-                for(User member:members)
+            //121
+            case 0:
+                try
                 {
-                    if(users.containsKey(member.getUserID()))
-                        users.get(userID).getBasicRemote().sendText(groupMSG.toString());
-                }
-            }
-            else
-                throw new Exception("type invalid");
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
+                    if(this.ID < 0)
+                        throw new Exception("wss login first pls");
+                    Integer userID = jsonObject.get("ID").getAsInt();
+                    String msg = jsonObject.get("message").getAsString();
 
+                    //logger.info(this.ID + ": \"" + msg + "\" to user:" + userID);
+
+                    Integer msgID = messageService.insertMSG(this.ID, msg, userID);
+                    Message message1 = messageService.getMSGByID(msgID);
+
+                    logger.info(this.ID + ": \"" + msg + "\" to user:" + userID);
+                    //logger.info("database insert msg over");
+
+                    if(users.containsKey(userID))
+                        users.get(userID).getBasicRemote().sendText(message1.toString());
+                    break;
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            //12n
+            case 1:
+                try
+                {
+                    if(this.ID < 0)
+                        throw new Exception("wss login first pls");
+                    Integer groupID = jsonObject.get("ID").getAsInt();
+                    String msg = jsonObject.get("message").getAsString();
+
+                    //logger.info(this.ID + ": \"" + msg + "\" to group:" + groupID);
+
+                    Integer msgID = messageService.insertGMSG(this.ID, msg, groupID);
+                    GroupMSG groupMSG = messageService.getGMSGByID(msgID);
+                    List<User> members = groupService.getMembers(groupID);
+
+                    logger.info(this.ID + ": \"" + msg + "\" to group:" + groupID);
+                    //logger.info("database insert gmsg over");
+
+                    for(User member:members)
+                    {
+                        if(users.containsKey(member.getUserID()))
+                            users.get(groupID).getBasicRemote().sendText(groupMSG.toString());
+                    }
+                    break;
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            //login
+            case 2:
+                try
+                {
+                    if(this.ID > 0)
+                        throw new Exception("you have login");
+                    Integer ID = jsonObject.get("ID").getAsInt();
+                    this.ID = ID;
+
+                    logger.info(ID + " login wss");
+
+                    users.put(ID, this.session);
+                    break;
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            //pingpong
+            case 123:
+                try
+                {
+                    JsonObject pongRet = new JsonObject();
+                    pongRet.addProperty("type", 321);
+                    session.getBasicRemote().sendText(pongRet.toString());
+                    break;
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+        }
     }
 
     /**
