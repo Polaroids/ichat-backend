@@ -213,13 +213,16 @@ public class WSServer {
     {
         try
         {
+            User sender = getUserService().getInfo(message.getSenderID());
+
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("type", 0);
             jsonObject.addProperty("messageID", message.getMessageID());
             jsonObject.addProperty("content", message.getContent());
             jsonObject.addProperty("sentTime", message.getSentTime());
-            jsonObject.addProperty("senderID", message.getSenderID());
-            jsonObject.addProperty("avatar", getUserService().getInfo(message.getSenderID()).getAvatar());
+            jsonObject.addProperty("senderID", sender.getUserID());
+            jsonObject.addProperty("avatar", sender.getAvatar());
+            jsonObject.addProperty("senderName", sender.getUsername());
 
             return jsonObject;
         }
@@ -234,13 +237,15 @@ public class WSServer {
     {
         try
         {
+            User sender = getUserService().getInfo(groupMSG.getSenderID());
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("type", 1);
             jsonObject.addProperty("GM_ID", groupMSG.getGM_ID());
             jsonObject.addProperty("content", groupMSG.getContent());
             jsonObject.addProperty("sentTime", groupMSG.getTime());
-            jsonObject.addProperty("senderID", groupMSG.getSenderID());
-            jsonObject.addProperty("avatar", getUserService().getInfo(groupMSG.getSenderID()).getAvatar());
+            jsonObject.addProperty("senderID", sender.getUserID());
+            jsonObject.addProperty("avatar", sender.getAvatar());
+            jsonObject.addProperty("senderName", sender.getUsername());
             jsonObject.addProperty("groupID", getMessageService().getGroupIDByGMSG(groupMSG.getGM_ID()));
 
             return jsonObject;
