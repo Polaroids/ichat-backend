@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.util.List;
@@ -35,12 +36,21 @@ public class WSServer {
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
 
+    private static WSServer wsServer;
     @Autowired
-    MessageService messageService;
+    private MessageService messageService;
     @Autowired
-    GroupService groupService;
+    private GroupService groupService;
 
     private static final Gson gson = new GsonBuilder().create();
+
+    // 解决 @Autowired 为空指针的问题
+    @PostConstruct
+    private void init() {
+        wsServer = this;
+        wsServer.messageService = this.messageService;
+        wsServer.groupService = this.groupService;
+    }
 
     /**
      * 连接建立成功调用的方法
@@ -51,15 +61,8 @@ public class WSServer {
 
         logger.info(session.getId() + " is connecting wss");
 
-        //this.ID = new Integer((String) SecurityUtils.getSubject().getPrincipal());
-        //this.ID = 1000000;
-
         this.ID = -1;
         this.session = session;
-
-        //logger.info(ID + "login");
-
-        //users.put(ID, session);
     }
 
     /**
@@ -97,13 +100,12 @@ public class WSServer {
                     Integer userID = jsonObject.get("ID").getAsInt();
                     String msg = jsonObject.get("message").getAsString();
 
-                    //logger.info(this.ID + ": \"" + msg + "\" to user:" + userID);
-
-                    Integer msgID = messageService.insertMSG(this.ID, msg, userID);
-                    Message message1 = messageService.getMSGByID(msgID);
-
                     logger.info(this.ID + ": \"" + msg + "\" to user:" + userID);
-                    //logger.info("database insert msg over");
+
+                    Integer msgID = getMessageService().insertMSG(this.ID, msg, userID);
+                    Message message1 = getMessageService().getMSGByID(msgID);
+
+                    logger.info("database insert msg over");
 
                     if(users.containsKey(userID))
                         users.get(userID).getBasicRemote().sendText(message1.toString());
@@ -113,6 +115,7 @@ public class WSServer {
                 {
                     e.printStackTrace();
                 }
+                break;
             //12n
             case 1:
                 try
@@ -122,14 +125,13 @@ public class WSServer {
                     Integer groupID = jsonObject.get("ID").getAsInt();
                     String msg = jsonObject.get("message").getAsString();
 
-                    //logger.info(this.ID + ": \"" + msg + "\" to group:" + groupID);
-
-                    Integer msgID = messageService.insertGMSG(this.ID, msg, groupID);
-                    GroupMSG groupMSG = messageService.getGMSGByID(msgID);
-                    List<User> members = groupService.getMembers(groupID);
-
                     logger.info(this.ID + ": \"" + msg + "\" to group:" + groupID);
-                    //logger.info("database insert gmsg over");
+
+                    Integer msgID = getMessageService().insertGMSG(this.ID, msg, groupID);
+                    GroupMSG groupMSG = getMessageService().getGMSGByID(msgID);
+                    List<User> members = getGroupService().getMembers(groupID);
+
+                    logger.info("database insert gmsg over");
 
                     for(User member:members)
                     {
@@ -142,6 +144,7 @@ public class WSServer {
                 {
                     e.printStackTrace();
                 }
+                break;
             //login
             case 2:
                 try
@@ -160,6 +163,7 @@ public class WSServer {
                 {
                     e.printStackTrace();
                 }
+                break;
             //pingpong
             case 123:
                 try
@@ -185,6 +189,16 @@ public class WSServer {
     public void onError(Session session, Throwable error){
         logger.error("发生错误");
         error.printStackTrace();
+    }
+
+    public MessageService getMessageService()
+    {
+        return wsServer.messageService;
+    }
+
+    public GroupService getGroupService()
+    {
+        return wsServer.groupService;
     }
 
 }
