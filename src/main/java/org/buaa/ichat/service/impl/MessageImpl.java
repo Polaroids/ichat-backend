@@ -321,5 +321,13 @@ public class MessageImpl implements MessageService {
         return ans;
     }
 
+    public Integer getGroupIDByGMSG(Integer GM_ID) throws Exception
+    {
+        if(GM_ID == null)
+            throw new Exception("参数缺失");
+
+        GMSGSend gmsgSend = gmsgSendMapper.queryGMSGSendLimit1(GMSGSend.QueryBuild().GM_ID(GM_ID).build());
+        return gmsgSend.getGroupID();
+    }
 
 }

@@ -3,12 +3,12 @@ package org.buaa.ichat.websocket;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import org.apache.shiro.SecurityUtils;
 import org.buaa.ichat.entity.GroupMSG;
 import org.buaa.ichat.entity.Message;
 import org.buaa.ichat.entity.User;
 import org.buaa.ichat.service.GroupService;
 import org.buaa.ichat.service.MessageService;
+import org.buaa.ichat.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +41,8 @@ public class WSServer {
     private MessageService messageService;
     @Autowired
     private GroupService groupService;
+    @Autowired
+    private UserService userService;
 
     private static final Gson gson = new GsonBuilder().create();
 
@@ -50,6 +52,7 @@ public class WSServer {
         wsServer = this;
         wsServer.messageService = this.messageService;
         wsServer.groupService = this.groupService;
+        wsServer.userService = this.userService;
     }
 
     /**
@@ -108,7 +111,7 @@ public class WSServer {
                     logger.info("database insert msg over");
 
                     if(users.containsKey(userID))
-                        users.get(userID).getBasicRemote().sendText(message1.toString());
+                        users.get(userID).getBasicRemote().sendText(messageToJsonObject(message1).toString());
                     break;
                 }
                 catch (Exception e)
@@ -199,6 +202,54 @@ public class WSServer {
     public GroupService getGroupService()
     {
         return wsServer.groupService;
+    }
+
+    public UserService getUserService()
+    {
+        return wsServer.userService;
+    }
+
+    public JsonObject messageToJsonObject(Message message)
+    {
+        try
+        {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("type", 0);
+            jsonObject.addProperty("messageID", message.getMessageID());
+            jsonObject.addProperty("content", message.getContent());
+            jsonObject.addProperty("sentTime", message.getSentTime());
+            jsonObject.addProperty("senderID", message.getSenderID());
+            jsonObject.addProperty("avatar", getUserService().getInfo(message.getSenderID()).getAvatar());
+
+            return jsonObject;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return new JsonObject();
+    }
+
+    public JsonObject groupMSGToJsonObject(GroupMSG groupMSG)
+    {
+        try
+        {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("type", 1);
+            jsonObject.addProperty("GM_ID", groupMSG.getGM_ID());
+            jsonObject.addProperty("content", groupMSG.getContent());
+            jsonObject.addProperty("sentTime", groupMSG.getTime());
+            jsonObject.addProperty("senderID", groupMSG.getSenderID());
+            jsonObject.addProperty("avatar", getUserService().getInfo(groupMSG.getSenderID()).getAvatar());
+            jsonObject.addProperty("groupID", getMessageService().getGroupIDByGMSG(groupMSG.getGM_ID()));
+
+            return jsonObject;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return new JsonObject();
     }
 
 }
