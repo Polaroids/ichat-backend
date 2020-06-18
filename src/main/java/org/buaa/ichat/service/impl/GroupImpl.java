@@ -113,6 +113,8 @@ public class GroupImpl implements GroupService {
         for (Members member:members){
             groupIDs.add(member.getGroupID());
         }
+        if(groupIDs.size() <= 0)
+            return new ArrayList<>();
 
         return groupMapper.queryGroup(Group.QueryBuild().groupIDList(groupIDs).build());
     }

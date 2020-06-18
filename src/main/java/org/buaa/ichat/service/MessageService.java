@@ -1,5 +1,6 @@
 package org.buaa.ichat.service;
 
+import org.buaa.ichat.entity.Group;
 import org.buaa.ichat.entity.GroupMSG;
 import org.buaa.ichat.entity.Message;
 import com.alibaba.fastjson.JSONObject;
@@ -19,4 +20,5 @@ public interface MessageService {
     public List<Message> getHistoryMSG(Integer userID, Integer msgID)throws Exception;
     public List<GroupMSG> getHistoryGMSG(Integer groupID, Integer gmsgID)throws Exception;
     public List<JSONObject> getChatList()throws Exception;
+    public Integer getGroupIDByGMSG(Integer GM_ID)throws Exception;
 }

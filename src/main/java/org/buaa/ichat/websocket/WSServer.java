@@ -1,28 +1,59 @@
 package org.buaa.ichat.websocket;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import org.buaa.ichat.entity.GroupMSG;
+import org.buaa.ichat.entity.Message;
+import org.buaa.ichat.entity.User;
+import org.buaa.ichat.service.GroupService;
+import org.buaa.ichat.service.MessageService;
+import org.buaa.ichat.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.concurrent.CopyOnWriteArraySet;
-
+import javax.annotation.PostConstruct;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @ServerEndpoint 注解是一个类层次的注解，它的功能主要是将目前的类定义成一个websocket服务器端,
  * 注解的值将被用于监听用户连接的终端访问URL地址,客户端可以通过这个URL来连接到WebSocket服务器端
  */
-@ServerEndpoint("/websocket")
+@ServerEndpoint(value = "/websocket")
 @Component
 public class WSServer {
-    //静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。
-    private static int onlineCount = 0;
+    private static final Logger logger = LoggerFactory.getLogger(WSServer.class);
 
-    //concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。若要实现服务端与单一客户端通信的话，可以使用Map来存放，其中Key可以为用户标识
-    private static CopyOnWriteArraySet<WSServer> webSocketSet = new CopyOnWriteArraySet<WSServer>();
+    private static final Map<Integer, Session> users = new ConcurrentHashMap<>();
 
+    private Integer ID;
     //与某个客户端的连接会话，需要通过它来给客户端发送数据
     private Session session;
+
+    private static WSServer wsServer;
+    @Autowired
+    private MessageService messageService;
+    @Autowired
+    private GroupService groupService;
+    @Autowired
+    private UserService userService;
+
+    private static final Gson gson = new GsonBuilder().create();
+
+    // 解决 @Autowired 为空指针的问题
+    @PostConstruct
+    private void init() {
+        wsServer = this;
+        wsServer.messageService = this.messageService;
+        wsServer.groupService = this.groupService;
+        wsServer.userService = this.userService;
+    }
 
     /**
      * 连接建立成功调用的方法
@@ -30,10 +61,11 @@ public class WSServer {
      */
     @OnOpen
     public void onOpen(Session session){
+
+        logger.info(session.getId() + " is connecting wss");
+
+        this.ID = -1;
         this.session = session;
-        webSocketSet.add(this);     //加入set中
-        addOnlineCount();           //在线数加1
-        System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
     }
 
     /**
@@ -41,9 +73,11 @@ public class WSServer {
      */
     @OnClose
     public void onClose(){
-        webSocketSet.remove(this);  //从set中删除
-        subOnlineCount();           //在线数减1
-        System.out.println("有一连接关闭！当前在线人数为" + getOnlineCount());
+
+        logger.info(ID + "logout");
+
+        users.remove(ID);
+        logger.info(ID + "连接关闭");
     }
 
     /**
@@ -53,15 +87,99 @@ public class WSServer {
      */
     @OnMessage
     public void onMessage(String message, Session session) {
-        System.out.println("来自客户端的消息:" + message);
-        //群发消息
-        for(WSServer item: webSocketSet){
-            try {
-                item.sendMessage(message);
-            } catch (IOException e) {
-                e.printStackTrace();
-                continue;
-            }
+        logger.info("来自"+ session.getId() + "的消息:" + message);
+
+        JsonObject jsonObject = gson.fromJson(message, JsonObject.class);
+        Integer type = jsonObject.get("type").getAsInt();
+
+        switch(type)
+        {
+            //121
+            case 0:
+                try
+                {
+                    if(this.ID < 0)
+                        throw new Exception("wss login first pls");
+                    Integer userID = jsonObject.get("ID").getAsInt();
+                    String msg = jsonObject.get("message").getAsString();
+
+                    logger.info(this.ID + ": \"" + msg + "\" to user:" + userID);
+
+                    Integer msgID = getMessageService().insertMSG(this.ID, msg, userID);
+                    Message message1 = getMessageService().getMSGByID(msgID);
+
+                    logger.info("database insert msg over");
+
+                    if(users.containsKey(userID))
+                        users.get(userID).getBasicRemote().sendText(messageToJsonObject(message1).toString());
+                    break;
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                break;
+            //12n
+            case 1:
+                try
+                {
+                    if(this.ID < 0)
+                        throw new Exception("wss login first pls");
+                    Integer groupID = jsonObject.get("ID").getAsInt();
+                    String msg = jsonObject.get("message").getAsString();
+
+                    logger.info(this.ID + ": \"" + msg + "\" to group:" + groupID);
+
+                    Integer msgID = getMessageService().insertGMSG(this.ID, msg, groupID);
+                    GroupMSG groupMSG = getMessageService().getGMSGByID(msgID);
+                    List<User> members = getGroupService().getMembers(groupID);
+
+                    logger.info("database insert gmsg over");
+
+                    for(User member:members)
+                    {
+                        if(users.containsKey(member.getUserID()))
+                            users.get(groupID).getBasicRemote().sendText(groupMSG.toString());
+                    }
+                    break;
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                break;
+            //login
+            case 2:
+                try
+                {
+                    if(this.ID > 0)
+                        throw new Exception("you have login");
+                    Integer ID = jsonObject.get("ID").getAsInt();
+                    this.ID = ID;
+
+                    logger.info(ID + " login wss");
+
+                    users.put(ID, this.session);
+                    break;
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                break;
+            //pingpong
+            case 123:
+                try
+                {
+                    JsonObject pongRet = new JsonObject();
+                    pongRet.addProperty("type", 321);
+                    session.getBasicRemote().sendText(pongRet.toString());
+                    break;
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
         }
     }
 
@@ -72,29 +190,66 @@ public class WSServer {
      */
     @OnError
     public void onError(Session session, Throwable error){
-        System.out.println("发生错误");
+        logger.error("发生错误");
         error.printStackTrace();
     }
 
-    /**
-     * 这个方法与上面几个方法不一样。没有用注解，是根据自己需要添加的方法。
-     * @param message
-     * @throws IOException
-     */
-    public void sendMessage(String message) throws IOException{
-        this.session.getBasicRemote().sendText(message);
-        //this.session.getAsyncRemote().sendText(message);
+    public MessageService getMessageService()
+    {
+        return wsServer.messageService;
     }
 
-    public static synchronized int getOnlineCount() {
-        return onlineCount;
+    public GroupService getGroupService()
+    {
+        return wsServer.groupService;
     }
 
-    public static synchronized void addOnlineCount() {
-        WSServer.onlineCount++;
+    public UserService getUserService()
+    {
+        return wsServer.userService;
     }
 
-    public static synchronized void subOnlineCount() {
-        WSServer.onlineCount--;
+    public JsonObject messageToJsonObject(Message message)
+    {
+        try
+        {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("type", 0);
+            jsonObject.addProperty("messageID", message.getMessageID());
+            jsonObject.addProperty("content", message.getContent());
+            jsonObject.addProperty("sentTime", message.getSentTime());
+            jsonObject.addProperty("senderID", message.getSenderID());
+            jsonObject.addProperty("avatar", getUserService().getInfo(message.getSenderID()).getAvatar());
+
+            return jsonObject;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return new JsonObject();
     }
+
+    public JsonObject groupMSGToJsonObject(GroupMSG groupMSG)
+    {
+        try
+        {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("type", 1);
+            jsonObject.addProperty("GM_ID", groupMSG.getGM_ID());
+            jsonObject.addProperty("content", groupMSG.getContent());
+            jsonObject.addProperty("sentTime", groupMSG.getTime());
+            jsonObject.addProperty("senderID", groupMSG.getSenderID());
+            jsonObject.addProperty("avatar", getUserService().getInfo(groupMSG.getSenderID()).getAvatar());
+            jsonObject.addProperty("groupID", getMessageService().getGroupIDByGMSG(groupMSG.getGM_ID()));
+
+            return jsonObject;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return new JsonObject();
+    }
+
 }
