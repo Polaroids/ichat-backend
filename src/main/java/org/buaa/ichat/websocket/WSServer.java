@@ -221,6 +221,7 @@ public class WSServer {
             jsonObject.addProperty("content", message.getContent());
             jsonObject.addProperty("sentTime", message.getSentTime());
             jsonObject.addProperty("senderID", sender.getUserID());
+            jsonObject.addProperty("senderName", sender.getUsername());
             jsonObject.addProperty("avatar", sender.getAvatar());
             jsonObject.addProperty("senderName", sender.getUsername());
 
@@ -244,6 +245,7 @@ public class WSServer {
             jsonObject.addProperty("content", groupMSG.getContent());
             jsonObject.addProperty("sentTime", groupMSG.getTime());
             jsonObject.addProperty("senderID", sender.getUserID());
+            jsonObject.addProperty("senderName", sender.getUsername());
             jsonObject.addProperty("avatar", sender.getAvatar());
             jsonObject.addProperty("senderName", sender.getUsername());
             jsonObject.addProperty("groupID", getMessageService().getGroupIDByGMSG(groupMSG.getGM_ID()));

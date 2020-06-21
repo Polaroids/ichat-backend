@@ -278,7 +278,7 @@ public class MessageImpl implements MessageService {
             //    continue;
 
             //Message lastMSG = noSendMSG.get(noSendNum - 1);
-            Message lastMSG = latestMSGs.get(historyNum - 1);
+            Message lastMSG = latestMSGs.get(0);
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("ID", friend.getUserID());
@@ -305,7 +305,7 @@ public class MessageImpl implements MessageService {
             //    continue;
 
             //GroupMSG lastGMSG = noSendGMSG.get(noSendNum - 1);
-            GroupMSG lastGMSG = latestGMSGs.get(historyNum - 1);
+            GroupMSG lastGMSG = latestGMSGs.get(0);
 
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("ID", group.getGroupID());
