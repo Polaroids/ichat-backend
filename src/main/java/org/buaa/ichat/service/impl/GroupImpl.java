@@ -27,7 +27,7 @@ public class GroupImpl implements GroupService {
     @Autowired
     UserMapper userMapper;
     @Override
-    public void create(Integer userID, String name, String des, String avatar, String[] members)throws Exception {
+    public int create(Integer userID, String name, String des, String avatar, String[] members)throws Exception {
         Group group = Group.Build()
                 .name(name)
                 .avatar(avatar)
@@ -56,6 +56,8 @@ public class GroupImpl implements GroupService {
         }
         if (fails.size() != 0)
             throw new Exception("群已经成功创建但部分非好友无法拉进群聊");
+
+        return group.getGroupID();
     }
 
     @Override

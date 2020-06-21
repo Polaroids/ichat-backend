@@ -39,8 +39,8 @@ public class GroupController {
         Subject subject = SecurityUtils.getSubject();
         Integer userID = new Integer ((String)subject.getPrincipal());
         try {
-            groupService.create(userID,name,des,avatar,members);
-            return RetResponse.makeOKRsp();
+            int groupID = groupService.create(userID,name,des,avatar,members);
+            return RetResponse.makeOKRsp(groupID);
         }
         catch (Exception e)
         {
