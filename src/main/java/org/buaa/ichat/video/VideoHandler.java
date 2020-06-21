@@ -125,6 +125,10 @@ public class VideoHandler {
                     ErrorResponse(t, session, "callResponse");
                 }
                 break;
+            case "stopCall":
+                logger.info("receive message: " + message);
+                callerStopCall(user);
+                break;
             case "incomingCallResponse":
                 logger.info("receive message: " + message);
                 incomingCallResponse(user, jsonMessage);
@@ -183,6 +187,7 @@ public class VideoHandler {
 
         // 设置呼叫者正忙状态
         caller.setStateBusy();
+        callee.setStateBusy();
 
         caller.setSdpOffer(jsonMessage.getAsJsonPrimitive("sdpOffer").getAsString());
         caller.setCallingTo(calleeID);
@@ -241,6 +246,26 @@ public class VideoHandler {
             }
         }).start();
     }
+
+    // callee 接通前，caller 主动挂掉电话，告诉 callee 对方挂断了
+    private void callerStopCall(UserSession caller) {
+        caller.setStateFree();
+        String calleeID = caller.getCallingTo();
+        UserSession callee = getUserSessionByUserID(calleeID);
+        JsonObject message = new JsonObject();
+        message.addProperty("type", "incomingCallStopped");
+        try {
+            callee.sendMessage(message);
+        } catch (Exception e) {
+            logger.debug("send message \"incomingCallStopped\" to callee");
+            logger.debug(e.getMessage());
+        }
+        callee.setStateFree();
+        // 告诉计时器不用再等了
+        callee.setResponse(true);
+
+    }
+
 
     // 被呼叫者向服务器返回应答信息
     private void incomingCallResponse(UserSession callee, JsonObject jsonMessage) throws IOException {
