@@ -139,7 +139,7 @@ public class WSServer {
                     for(User member:members)
                     {
                         if(users.containsKey(member.getUserID()))
-                            users.get(groupID).getBasicRemote().sendText(groupMSG.toString());
+                            users.get(member.getUserID()).getBasicRemote().sendText(groupMSGToJsonObject(groupMSG).toString());
                     }
                     break;
                 }
