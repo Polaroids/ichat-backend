@@ -49,7 +49,7 @@ public class MessageImpl implements MessageService {
         if (userID == null || content ==null || content.equals("")||groupID==null)
             throw new  Exception("参数缺失");
         //
-        Integer ID = new Integer((String)SecurityUtils.getSubject().getPrincipal());
+        //Integer ID = new Integer((String)SecurityUtils.getSubject().getPrincipal());
         //添加群消息
         GroupMSG groupMSG = GroupMSG.Build()
                 .content(content)
@@ -61,8 +61,8 @@ public class MessageImpl implements MessageService {
         List<Members>members = membersMapper.queryMembers(Members.QueryBuild().groupID(groupID).build());
         //为除了自己以外的群成员添加接受消息记录
         for (Members member:members){
-            if(member.getMemberID() == ID)
-                continue;
+            //if(member.getMemberID().equals(ID))
+            //    continue;
             gmsgSendMapper.insertGMSGSend(
                     GMSGSend.Build()
                             .groupID(groupID)

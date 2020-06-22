@@ -138,7 +138,7 @@ public class WSServer {
 
                     for(User member:members)
                     {
-                        if(member.getUserID() == this.ID)
+                        if(member.getUserID().equals(this.ID))
                             continue;
                         if(users.containsKey(member.getUserID()))
                             users.get(member.getUserID()).getBasicRemote().sendText(groupMSGToJsonObject(groupMSG).toString());
